@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RestRequestAndroid</string>
+    <string name="maps_api_key">AIzaSyDp3fKXHuEu6yc0H3Yqoz7aLH-5ZR-q58I</string>
 </resources>

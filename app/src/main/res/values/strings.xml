@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">RestRequestAndroid</string>
-    <string name="maps_api_key">AIzaSyDp3fKXHuEu6yc0H3Yqoz7aLH-5ZR-q58I</string>
+    <string name="title_activity_maps">Maps</string>
+    <string name="action_geoolocate">Pick Place</string>
+    <string name="default_info_title">Default Location</string>
+    <string name="default_info_snipped">No Place found, because location Permission is disable</string>
+    <string name="maps_api_key">AIzaSyCJtSwMl6hNCeN5MYP75lTGmVdzBJcOV_8</string>
+    <string name="show_current_place">Show Place</string>
 </resources>

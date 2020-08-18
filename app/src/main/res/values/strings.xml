@@ -6,4 +6,5 @@
     <string name="default_info_snipped">No Place found, because location Permission is disable</string>
     <string name="maps_api_key">AIzaSyCJtSwMl6hNCeN5MYP75lTGmVdzBJcOV_8</string>
     <string name="show_current_place">Show Place</string>
+    <string name="send_to_server">Send to Server</string>
 </resources>

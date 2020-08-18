@@ -1,5 +1,6 @@
 package com.example.restrequestandroid
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
@@ -33,13 +34,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var lastLocation: Location
     private lateinit var locationCallback: LocationCallback
     private lateinit var locationRequest: LocationRequest
+    private lateinit var titleStr: String
     private var locationUpdateState = false
+
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         val showCurrent = findViewById<Button>(R.id.showCurrentPlace)
         val tv_current = findViewById<TextView>(R.id.tv_currentPlace)
+        val btn_sendServer = findViewById<Button>(R.id.btnSendServer)
 
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -52,17 +57,33 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             }
         }
         showCurrent.setOnClickListener() {
-            if (lastLocation != null) {
-                val latestPlace = lastLocation
-                val latlng = LatLng(latestPlace.latitude, latestPlace.latitude)
-                val lastAddress = getAddress(latlng)
-
+            if (titleStr != null) {
+                val lastAddress = titleStr
+                tv_current.text = ""
                 tv_current.text = lastAddress.toString()
+            } else {
+                tv_current.text = "No Address Found"
             }
+
+        }
+        btn_sendServer.setOnClickListener() {
+            if (lastLocation != null) {
+                val intent = Intent(this@MainActivity, SendRequestActivity::class.java)
+
+                val bundle =Bundle()
+                val mlatitude = lastLocation.latitude
+                val mlongitude = lastLocation.longitude
+                bundle.putDouble("Lat", mlatitude)
+                bundle.putDouble("Lon", mlongitude)
+                intent.putExtras(bundle)
+                startActivity(intent)
+            }
+
 
         }
         createLocationRequest()
     }
+
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
@@ -102,7 +123,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     private fun placeMarkerOnMap(location: LatLng) {
         val markerOptions = MarkerOptions().position(location)
-        val titleStr = getAddress(location)
+        titleStr = getAddress(location)
         markerOptions.title(titleStr)
 
         markerOptions.icon(
@@ -123,18 +144,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val addresses: List<Address>?
         val address: Address?
         var addressText = ""
-        var index = 0;
-        var strbDr = StringBuilder("")
         try {
             addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
             if (null != addresses && !addresses.isEmpty()) {
                 address = addresses[0]
-                do {
-//                    addressText += address.getAddressLine(0)
-                    strbDr.append(address.getAddressLine(index)).append("\n")
-                    index++
-                } while (index<address.maxAddressLineIndex)
-                addressText=strbDr.toString()
+                for (i in 0 until addresses.size) {
+                    addressText += if (i == 0) address.getAddressLine(i) else "\n" + address.getAddressLine(
+                        i
+                    )
+                }
             }
         } catch (e: IOException) {
             Log.e("MapsActivity", e.localizedMessage)

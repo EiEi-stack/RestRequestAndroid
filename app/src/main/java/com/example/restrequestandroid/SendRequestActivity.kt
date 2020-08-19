@@ -4,6 +4,7 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONArray
 import org.json.JSONObject
@@ -13,7 +14,6 @@ import java.net.URL
 class SendRequestActivity : AppCompatActivity() {
     var lat: Double? = 0.0
     var lon: Double? = 0.0
-    val TAG = "SendRequestActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_send_request)
@@ -40,8 +40,12 @@ class SendRequestActivity : AppCompatActivity() {
         list.put(json)
         Log.d("JSONArray", list.toString())
         val jsonString = list.toString()
-        HttpPost().execute(jsonString)
-
+        var code = HttpPost().execute(jsonString).get()
+        if (code == 200) {
+            Toast.makeText(applicationContext, "Success", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(applicationContext, "Update fail" + code, Toast.LENGTH_SHORT).show()
+        }
 
     }
 
@@ -51,11 +55,17 @@ class SendRequestActivity : AppCompatActivity() {
 
         var json = JSONObject() as JSONObject
 
-        json.put("id", 18)
+
+        json.put("id", 19)
         list.put(json)
         Log.d("DeleteJSONArray", list.toString())
         val jsonString = list.toString()
-        HttpDelete().execute(jsonString)
+        var code = HttpDelete().execute(jsonString).get()
+        if (code == 200) {
+            Toast.makeText(applicationContext, "Success", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(applicationContext, "Update fail" + code, Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun putJson() {
@@ -64,22 +74,46 @@ class SendRequestActivity : AppCompatActivity() {
 
         var json = JSONObject() as JSONObject
 
-        json.put("id", 18)
-        json.put("longitude", lat)
-        json.put("latitude", lon)
-        json.put("altitude", "44.5")
-        json.put("gpstime", "2044-05-24 11:24:00")
+        json.put("id", 19)
+        json.put("longitude", 11.1234)
+        json.put("latitude", 22.5678)
+        json.put("altitude", "11.5")
+        json.put("gpstime", "2011-05-24 11:24:00")
         list.put(json)
         Log.d("PutJSONArray", list.toString())
         val jsonString = list.toString()
-        HttpPut().execute(jsonString)
-
+        var code = HttpPut().execute(jsonString).get()
+        if (code == 200) {
+            Toast.makeText(applicationContext, "Success", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(applicationContext, "Update fail" + code, Toast.LENGTH_SHORT).show()
+        }
 
     }
 
-    class HttpPost : AsyncTask<String, String, String>() {
-        override fun doInBackground(vararg p0: String?): String {
+    fun getJson() {
+
+        var list = JSONArray()
+
+        var json = JSONObject() as JSONObject
+
+        json.put("id", 18)
+        list.put(json)
+        Log.d("PutJSONArray", list.toString())
+        val jsonString = list.toString()
+        var code = HttpGet().execute(jsonString).get()
+        if (code != null) {
+            Toast.makeText(applicationContext, "Success" + code, Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(applicationContext, "Update fail" + code, Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
+    class HttpPost : AsyncTask<String, String, Int>() {
+        override fun doInBackground(vararg p0: String?): Int {
             val data = p0[0] as String
+            var code = 0
             Log.i("method-data", data)
             val urlstr = "http://10.0.2.2:8080/logger"
             val url = URL(urlstr)
@@ -102,7 +136,7 @@ class SendRequestActivity : AppCompatActivity() {
                 bw.write(data)
                 bw.flush()
                 bw.close()
-                val code = httpClient.responseCode
+                code = httpClient.responseCode
 
                 Log.i("HttpPost", "レスポンスコード:" + code)
 
@@ -113,60 +147,26 @@ class SendRequestActivity : AppCompatActivity() {
                 httpClient.disconnect()
             }
 
-            return ""
+            return code
         }
     }
 
-    class HttpDelete : AsyncTask<String, String, String>() {
+    class HttpGet : AsyncTask<String, String, String>() {
         override fun doInBackground(vararg p0: String?): String {
             val data = p0[0] as String
+            var code = 0
+            var result = ""
+            var line = ""
+            var read = ""
+            Log.i("method-data", data)
             val urlstr = "http://10.0.2.2:8080/logger"
             val url = URL(urlstr)
             val httpClient = url.openConnection() as HttpURLConnection
             httpClient.apply {
                 readTimeout = 10000
                 connectTimeout = 5000
-                requestMethod = "DELETE"
+                requestMethod = "GET"
                 instanceFollowRedirects = false
-                doOutput = true
-                doInput = true
-                useCaches = false
-                setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
-            }
-
-            try {
-                httpClient.connect()
-                val os = httpClient.outputStream
-                val bw = os.bufferedWriter(Charsets.UTF_8)
-                bw.write(data)
-                bw.flush()
-                bw.close()
-                val code = httpClient.responseCode
-
-                Log.i("HttpPost", "レスポンスコード:" + code)
-
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                httpClient.disconnect()
-            }
-
-            return ""
-        }
-    }
-
-    class HttpPut : AsyncTask<String, String, String>() {
-        override fun doInBackground(vararg p0: String?): String {
-            val data = p0[0] as String
-            val urlstr = "http://10.0.2.2:8080/logger"
-            val url = URL(urlstr)
-            val httpClient = url.openConnection() as HttpURLConnection
-            httpClient.apply {
-                readTimeout = 10000
-                connectTimeout = 5000
-                requestMethod = "PUT"
-                instanceFollowRedirects = true
                 doOutput = true
                 doInput = true
                 useCaches = false
@@ -180,7 +180,91 @@ class SendRequestActivity : AppCompatActivity() {
                 bw.write(data)
                 bw.flush()
                 bw.close()
-                val code = httpClient.responseCode
+                code = httpClient.responseCode
+                if (code == 200) {
+                    val it = httpClient.inputStream
+                    read = it.bufferedReader(Charsets.UTF_8).use { it.readText() }
+
+                }
+                Log.i("HttpGet", "レスポンスコード:" + read)
+
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                httpClient.disconnect()
+            }
+
+            return read
+        }
+    }
+
+    class HttpDelete : AsyncTask<String, String, Int>() {
+        override fun doInBackground(vararg p0: String?): Int {
+            val data = p0[0] as String
+            var code = 0
+            val urlstr = "http://10.0.2.2:8080/logger"
+            val url = URL(urlstr)
+            val httpClient = url.openConnection() as HttpURLConnection
+            httpClient.apply {
+                readTimeout = 10000
+                connectTimeout = 5000
+                requestMethod = "DELETE"
+                instanceFollowRedirects = false
+                useCaches = false
+
+                setRequestProperty("Content-Type", "application/json; charset=UTF-8")
+//                setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+//                setRequestProperty("X-HTTP-Method-Override", "DELETE")
+            }
+
+            try {
+                httpClient.connect()
+                val os = httpClient.outputStream
+                val bw = os.bufferedWriter(Charsets.UTF_8)
+                bw.write(data)
+                bw.flush()
+                bw.close()
+                code = httpClient.responseCode
+
+                Log.i("HttpDelete", "レスポンスコード:" + code)
+
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                httpClient.disconnect()
+            }
+
+            return code
+        }
+    }
+
+    class HttpPut : AsyncTask<String, String, Int>() {
+        override fun doInBackground(vararg p0: String?): Int {
+            val data = p0[0] as String
+            var code = 0
+            val urlstr = "http://10.0.2.2:8080/logger"
+            val url = URL(urlstr)
+            val httpClient = url.openConnection() as HttpURLConnection
+            httpClient.apply {
+                readTimeout = 10000
+                connectTimeout = 5000
+                requestMethod = "POST"
+                instanceFollowRedirects = false
+                doOutput = true
+                doInput = true
+                useCaches = false
+                setRequestProperty("Content-Type", "application/json; charset=UTF-8")
+//                setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+            }
+
+            try {
+                httpClient.connect()
+                val os = httpClient.outputStream
+                os.write(data.toByteArray())
+                os.close()
+                code = httpClient.responseCode
 
                 Log.i("HttpPut", "レスポンスコード:" + code)
 
@@ -191,7 +275,7 @@ class SendRequestActivity : AppCompatActivity() {
                 httpClient.disconnect()
             }
 
-            return ""
+            return code
         }
     }
 }

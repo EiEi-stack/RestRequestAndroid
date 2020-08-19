@@ -7,4 +7,5 @@
     <string name="maps_api_key">AIzaSyCJtSwMl6hNCeN5MYP75lTGmVdzBJcOV_8</string>
     <string name="show_current_place">Show Place</string>
     <string name="send_to_server">Send to Server</string>
+    <string name="oAuthClientId">204796193447-rrd5s8da5eo5vsi49c42tleh237dp326.apps.googleusercontent.com</string>
 </resources>

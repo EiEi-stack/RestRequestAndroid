@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             if (lastLocation != null) {
                 val intent = Intent(this@MainActivity, SendRequestActivity::class.java)
 
-                val bundle =Bundle()
+                val bundle = Bundle()
                 val mlatitude = lastLocation.latitude
                 val mlongitude = lastLocation.longitude
                 bundle.putDouble("Lat", mlatitude)
@@ -78,8 +78,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 intent.putExtras(bundle)
                 startActivity(intent)
             }
-
-
         }
         createLocationRequest()
     }
@@ -87,8 +85,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-
-
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
         setUpMap()

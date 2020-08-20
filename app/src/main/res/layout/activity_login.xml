@@ -6,24 +6,39 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".LoginActivity">
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/sign_in_button"
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center">
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/btn_google_sign"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/btn_fb_sign"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/tv_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:text="Hello World"
-        android:textSize="30sp"
-        android:layout_gravity="center"/>
+        android:textSize="30sp" />
+
     <Button
         android:id="@+id/btn_show_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="See Map"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:text="See Map" />
 
 
 </LinearLayout>

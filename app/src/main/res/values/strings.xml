@@ -10,4 +10,11 @@
     <string name="oAuthClientId">204796193447-rrd5s8da5eo5vsi49c42tleh237dp326.apps.googleusercontent.com</string>
     <string name="facebook_app_id">1593811987465006</string>
     <string name="fb_login_protocol_scheme">fb1593811987465006</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="don_t_have_account">Don\'t have Account</string>
+    <string name="hello_world">Hello World</string>
+    <string name="see_map">See Map</string>
+    <string name="signup">SignUp</string>
 </resources>

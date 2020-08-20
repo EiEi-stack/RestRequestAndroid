@@ -14,13 +14,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".HomeActivity"></activity>
+        <activity android:name=".SignUpActivity" />
+        <activity android:name=".MainActivity" />
         <activity android:name=".SendRequestActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/maps_api_key" />
-        <!--FaceBookActivity-->
+            android:value="@string/maps_api_key" /> <!-- FaceBookActivity -->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -28,8 +29,7 @@
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name" />
-        <!--FaceBookActivity-->
+            android:label="@string/app_name" /> <!-- FaceBookActivity -->
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

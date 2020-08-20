@@ -33,6 +33,7 @@ class LoginActivity : AppCompatActivity() {
             override fun onSuccess(result: LoginResult?) {
                 Log.d(TAG, "Success Login")
                 getUserProfile(result?.accessToken, result?.accessToken?.userId)
+                showNextActivity()
             }
 
             override fun onCancel() {
@@ -43,6 +44,12 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this@LoginActivity, error?.message, Toast.LENGTH_LONG).show()
             }
         })
+        if (isLoggedIn()) {
+            // Show the Activity with the logged in user
+
+        } else {
+            // Show the Home Activity
+        }
         //Google依存関係
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestServerAuthCode("204796193447-rrd5s8da5eo5vsi49c42tleh237dp326.apps.googleusercontent.com")
@@ -52,23 +59,14 @@ class LoginActivity : AppCompatActivity() {
         val mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         btn_google_sign.visibility = View.VISIBLE
         btn_google_sign.setSize(SignInButton.SIZE_STANDARD)
-        tv_name.visibility = View.GONE
-        btn_show_map.visibility = View.GONE
         btn_google_sign.setOnClickListener {
             val signInIntent = mGoogleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
-        btn_show_map.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-
-        }
         val acct = GoogleSignIn.getLastSignedInAccount(this)
         if (acct != null) {
             btn_google_sign.visibility = View.GONE
-            tv_name.text = acct.displayName
-            tv_name.visibility = View.VISIBLE
-            btn_show_map.visibility = View.VISIBLE
+            showNextActivity()
         }
         //Google依存関係
     }
@@ -90,6 +88,12 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    fun isLoggedIn(): Boolean {
+        val accessToken = AccessToken.getCurrentAccessToken()
+        val isLoggedIn = accessToken != null && !accessToken.isExpired
+        return isLoggedIn
+    }
+
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
             val account =
@@ -97,21 +101,19 @@ class LoginActivity : AppCompatActivity() {
             //Google依存関係
             // Signed in successfully, show authenticated UI.
             btn_google_sign.visibility = View.GONE
-            tv_name.text = account?.displayName
-            tv_name.visibility = View.VISIBLE
-            btn_show_map.visibility = View.VISIBLE
+            showNextActivity()
         } catch (e: ApiException) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "signInResult:failed code=" + e.statusCode)
             btn_google_sign.visibility = View.VISIBLE
-            tv_name.text = ""
-            tv_name.visibility = View.GONE
-            btn_show_map.visibility = View.GONE
             //Google依存関係
         }
     }
-
+fun showNextActivity(){
+    val intent = Intent(this@LoginActivity,HomeActivity::class.java)
+    startActivity(intent)
+}
     @SuppressLint("LongLogTag")
     fun getUserProfile(token: AccessToken?, userId: String?) {
         {

@@ -15,6 +15,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_login.*
 
 
@@ -23,9 +25,19 @@ const val RC_SIGN_IN = 123
 class LoginActivity : AppCompatActivity() {
     var TAG = "Login Activity"
     lateinit var callbackManager: CallbackManager
+
+    //Firebase 依存系
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        //Firebase 依存系
+        auth = FirebaseAuth.getInstance()
+        btn_sign_up.setOnClickListener {
+            startActivity(Intent(this@LoginActivity, SignUpActivity::class.java))
+            finish()
+        }
         //Facebookの依存関係
         callbackManager = CallbackManager.Factory.create()
         btn_fb_sign.setPermissions(listOf("public_profile", "email"))
@@ -71,6 +83,18 @@ class LoginActivity : AppCompatActivity() {
         //Google依存関係
     }
 
+    //Firebase 依存系
+    public override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = auth.currentUser
+        updateUI(currentUser)
+    }
+
+    fun updateUI(currentUser: FirebaseUser?) {
+
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         //Facebook依存関係
@@ -110,10 +134,12 @@ class LoginActivity : AppCompatActivity() {
             //Google依存関係
         }
     }
-fun showNextActivity(){
-    val intent = Intent(this@LoginActivity,HomeActivity::class.java)
-    startActivity(intent)
-}
+
+    fun showNextActivity() {
+        val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+        startActivity(intent)
+    }
+
     @SuppressLint("LongLogTag")
     fun getUserProfile(token: AccessToken?, userId: String?) {
         {

@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_sign_up.*
 class SignUpActivity : AppCompatActivity() {
     //Firebase 依存系
     private lateinit var auth: FirebaseAuth
-    var TAG="SignUpActivity"
+    var TAG = "SignUpActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
@@ -22,33 +22,51 @@ class SignUpActivity : AppCompatActivity() {
             signUpUser()
         }
     }
-    fun signUpUser(){
 
-        if(tv_username.text.toString().isEmpty()){
-            tv_username.error="Plese enter email";
+    fun signUpUser() {
+
+        if (tv_username.text.toString().isEmpty()) {
+            tv_username.error = "Plese enter email";
             tv_username.requestFocus()
             return
         }
-        if(!Patterns.EMAIL_ADDRESS.matcher(tv_username.text.toString()).matches()){
-            tv_username.error="Please enter valid email";
+        if (!Patterns.EMAIL_ADDRESS.matcher(tv_username.text.toString()).matches()) {
+            tv_username.error = "Please enter valid email";
             tv_username.requestFocus()
             return
         }
-        if(tv_password.text.toString().isEmpty()){
-            tv_password.error="Plese enter password";
+        if (tv_password.text.toString().isEmpty()) {
+            tv_password.error = "Plese enter password";
             tv_password.requestFocus()
             return
         }
-        auth.createUserWithEmailAndPassword(tv_username.text.toString(), tv_password.text.toString())
+        auth.createUserWithEmailAndPassword(
+            tv_username.text.toString(),
+            tv_password.text.toString()
+        )
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    startActivity(Intent(this@SignUpActivity,LoginActivity::class.java))
+                    val user = auth.currentUser
+                    user!!.sendEmailVerification()
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+
+                                // Sign in success, update UI with the signed-in user's information
+                                startActivity(
+                                    Intent(
+                                        this@SignUpActivity,
+                                        LoginActivity::class.java
+                                    )
+                                )
+                            }
+                        }
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                    Toast.makeText(baseContext, "SignUp failed.Try again after some times",
-                        Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        baseContext, "SignUp failed.Try again after some times",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
 
                 // ...

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.util.Patterns
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,8 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.activity_login.btn_sign_up
+import kotlinx.android.synthetic.main.activity_sign_up.*
 
 
 const val RC_SIGN_IN = 123
@@ -38,6 +41,9 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this@LoginActivity, SignUpActivity::class.java))
             finish()
         }
+        btn_login.setOnClickListener {
+            doLogin()
+        }
         //Facebookの依存関係
         callbackManager = CallbackManager.Factory.create()
         btn_fb_sign.setPermissions(listOf("public_profile", "email"))
@@ -49,7 +55,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun onCancel() {
-                Toast.makeText(this@LoginActivity, "Login Cancel？led", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@LoginActivity, "Login Cancelled", Toast.LENGTH_LONG).show()
             }
 
             override fun onError(error: FacebookException?) {
@@ -93,6 +99,57 @@ class LoginActivity : AppCompatActivity() {
 
     fun updateUI(currentUser: FirebaseUser?) {
 
+        if (currentUser != null) {
+            if (currentUser.isEmailVerified) {
+                showNextActivity()
+
+            } else {
+
+                Toast.makeText(
+                    applicationContext,
+                    "Please verify your email address",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        } else {
+            Toast.makeText(applicationContext, "Login Failed.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun doLogin() {
+        if (tv_username.text.toString().isEmpty()) {
+            tv_username.error = "Plese enter email";
+            tv_username.requestFocus()
+            return
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(tv_username.text.toString()).matches()) {
+            tv_username.error = "Please enter valid email";
+            tv_username.requestFocus()
+            return
+        }
+        if (tv_password.text.toString().isEmpty()) {
+            tv_password.error = "Plese enter password";
+            tv_password.requestFocus()
+            return
+        }
+        auth.signInWithEmailAndPassword(tv_username.text.toString(), tv_password.text.toString())
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "signInWithEmail:success")
+                    val user = auth.currentUser
+                    updateUI(user)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "signInWithEmail:failure", task.exception)
+                    Toast.makeText(
+                        baseContext, "Login failed.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    updateUI(null)
+                }
+
+            }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -138,6 +195,7 @@ class LoginActivity : AppCompatActivity() {
     fun showNextActivity() {
         val intent = Intent(this@LoginActivity, HomeActivity::class.java)
         startActivity(intent)
+
     }
 
     @SuppressLint("LongLogTag")

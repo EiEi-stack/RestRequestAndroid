@@ -19,8 +19,6 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.activity_login.btn_sign_up
-import kotlinx.android.synthetic.main.activity_sign_up.*
 
 
 const val RC_SIGN_IN = 123
@@ -102,7 +100,7 @@ class LoginActivity : AppCompatActivity() {
         if (currentUser != null) {
             if (currentUser.isEmailVerified) {
                 showNextActivity()
-
+                finish()
             } else {
 
                 Toast.makeText(
@@ -117,22 +115,22 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun doLogin() {
-        if (tv_username.text.toString().isEmpty()) {
-            tv_username.error = "Plese enter email";
-            tv_username.requestFocus()
+        if (et_login_username.text.toString().isEmpty()) {
+            et_login_username.error = "Plese enter email";
+            et_login_username.requestFocus()
             return
         }
-        if (!Patterns.EMAIL_ADDRESS.matcher(tv_username.text.toString()).matches()) {
-            tv_username.error = "Please enter valid email";
-            tv_username.requestFocus()
+        if (!Patterns.EMAIL_ADDRESS.matcher(et_login_username.text.toString()).matches()) {
+            et_login_username.error = "Please enter valid email";
+            et_login_username.requestFocus()
             return
         }
-        if (tv_password.text.toString().isEmpty()) {
-            tv_password.error = "Plese enter password";
-            tv_password.requestFocus()
+        if (et_login_password.text.toString().isEmpty()) {
+            et_login_password.error = "Plese enter password";
+            et_login_password.requestFocus()
             return
         }
-        auth.signInWithEmailAndPassword(tv_username.text.toString(), tv_password.text.toString())
+        auth.signInWithEmailAndPassword(et_login_username.text.toString(), et_login_password.text.toString())
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information

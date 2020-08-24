@@ -57,7 +57,9 @@ class SignUpActivity : AppCompatActivity() {
                                         this@SignUpActivity,
                                         LoginActivity::class.java
                                     )
+
                                 )
+                                finish()
                             }
                         }
                 } else {

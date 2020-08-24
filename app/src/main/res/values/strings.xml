@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RestRequestAndroid</string>
+    <string name="app_name">WorkSchedule</string>
     <string name="title_activity_maps">Maps</string>
     <string name="action_geoolocate">Pick Place</string>
     <string name="default_info_title">Default Location</string>

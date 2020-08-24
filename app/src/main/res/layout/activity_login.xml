@@ -17,7 +17,7 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center"
-            android:src="@drawable/map_login" />
+            android:src="@drawable/work_people" />
 
         <EditText
             android:id="@+id/et_login_username"

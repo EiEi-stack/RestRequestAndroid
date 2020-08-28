@@ -40,9 +40,9 @@
                         android:gravity="center"
                         android:paddingTop="10dp"
                         android:paddingBottom="10dp"
-                        android:text="勤　務　先　名"
+                        android:text="勤務先名"
                         android:textAlignment="center"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
 
                     <EditText
@@ -57,7 +57,7 @@
                         android:paddingBottom="10dp"
                         android:singleLine="true"
                         android:textAlignment="textStart"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         tools:ignore="RtlCompat" />
 
                     <TextView
@@ -69,9 +69,9 @@
                         android:background="@android:color/white"
                         android:paddingTop="10dp"
                         android:paddingBottom="10dp"
-                        android:text="勤　務　先　連　絡　先"
+                        android:text="勤務先連絡先"
                         android:textAlignment="center"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -84,7 +84,7 @@
                         android:paddingBottom="10dp"
                         android:text="氏　　名"
                         android:textAlignment="center"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
 
                 </TableRow>
@@ -108,7 +108,7 @@
                         android:paddingBottom="10dp"
                         android:text="会　社　名"
                         android:textAlignment="center"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
 
                     <EditText
@@ -124,7 +124,7 @@
                         android:singleLine="true"
                         android:text="株式会社ユニオンテック"
                         android:textAlignment="textStart"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         tools:ignore="RtlCompat" />
 
                     <TextView
@@ -136,9 +136,9 @@
                         android:background="@android:color/white"
                         android:paddingTop="10dp"
                         android:paddingBottom="10dp"
-                        android:text="TEL： 　　　　　FAX： "
+                        android:text="TEL： 　　　　FAX： "
                         android:textAlignment="center"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -152,7 +152,7 @@
                         android:paddingBottom="10dp"
                         android:text="印"
                         android:textAlignment="textEnd"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:textStyle="bold"
                         tools:ignore="RtlCompat" />
 

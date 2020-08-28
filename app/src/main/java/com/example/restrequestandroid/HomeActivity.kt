@@ -23,7 +23,9 @@ class HomeActivity : AppCompatActivity() {
     lateinit var dayFormat: SimpleDateFormat
     private var maxDay = 0
     private var totalWorkDay = 0
+    private var allActualWorkDay = 0
     private var totalActualWorkDay = 0
+    private var totalActualWorkColumnTwo = 0
     private var totalWorkingHours = 0
     private var totalWorkingMinutes = 0
     var dayId = ArrayList<Int>()
@@ -31,6 +33,7 @@ class HomeActivity : AppCompatActivity() {
     var workOffEndHour = ArrayList<Int>()
     var workOffBreakHour = ArrayList<Int>()
     var workOffTotalHour = ArrayList<Int>()
+    var startHourColumn = ArrayList<Int>()
     lateinit var mProgressBar: ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,9 +73,10 @@ class HomeActivity : AppCompatActivity() {
         })
         startLoadData()
         for (i in 0 until 31) {
-            val temp = i.toString() + 1
-            dayId.add(temp.toInt())
+            val columnTwoId = i.toString() + 2
+            startHourColumn.add(columnTwoId.toInt())
         }
+
     }
 
     fun startLoadData() {
@@ -86,15 +90,19 @@ class HomeActivity : AppCompatActivity() {
 
     private fun reset() {
         totalWorkDay = 0
+        allActualWorkDay = 0
         totalActualWorkDay = 0
+        totalActualWorkColumnTwo=0
         totalWorkingHours = 0
         totalWorkingMinutes = 0
         dayId.clear()
-        workOffStartHour.clear()
+        startHourColumn.clear()
         workOffStartHour.clear()
         workOffEndHour.clear()
         workOffBreakHour.clear()
         workOffTotalHour.clear()
+
+
     }
 
     private fun addHeader() {
@@ -156,8 +164,9 @@ class HomeActivity : AppCompatActivity() {
         params.span = 2
 
         for (j in 0 until 6) {
+
             val tv_one = TextView(applicationContext)
-            tv_one.setPadding(0, 10, 0, 10)
+            tv_one.setPadding(20, 10, 0, 10)
             tv_one.setTextSize(14F)
             tv_one.setTypeface(null, Typeface.BOLD)
             tv_one.setBackgroundColor(Color.LTGRAY)
@@ -172,11 +181,15 @@ class HomeActivity : AppCompatActivity() {
             }
             if (j == 2) {
                 var setTotalActualWorkDay = ""
+                totalActualWorkDay =allActualWorkDay-totalActualWorkColumnTwo
                 setTotalActualWorkDay = totalActualWorkDay.toString() + "日"
                 tv_one.setText(setTotalActualWorkDay)
             }
             if (j == 3) {
-                tv_one.setText("1日")
+                val differenthour = totalWorkDay - totalActualWorkDay
+                var remainHour = ""
+                remainHour = differenthour.toString() + "日"
+                tv_one.setText(remainHour)
             }
             if (j == 4) {
                 var hour = 0
@@ -211,6 +224,12 @@ class HomeActivity : AppCompatActivity() {
         }
         for (i in 0 until maxDay) {
             totalWorkDay += 1
+            var mStartHour = 0
+            var mStartMinutes = 0
+            var mEndHour = 0
+            var mEndMinutes = 0
+            var mBreakHour = 0
+            var mBreakMinutes = 0
             val showCalendarDate = Calendar.getInstance()
             showCalendarDate.set(Calendar.MONTH, calendarobj.get(Calendar.MONTH))
             showCalendarDate.set(Calendar.DAY_OF_MONTH, i + 1)
@@ -240,14 +259,57 @@ class HomeActivity : AppCompatActivity() {
                 } else if (j == 2) {
                     tv_one.setText("09:00")
                     if (tv_one.text.isNotEmpty() && tv_one.text != "") {
-                        totalActualWorkDay += 1
+                        allActualWorkDay += 1
+
+                    }
+                    if (tv_one.text.isNotEmpty() || tv_one.text != "" || tv_one.text != "ー") {
+                        val value = tv_one.text.toString()
+                        val arr = value.split(":")
+                        mStartHour += arr[0].toInt()
+                        mStartMinutes += arr[1].toInt()
                     }
                 } else if (j == 3) {
                     tv_one.setText("18:00")
+                    if (tv_one.text.isNotEmpty() || tv_one.text != "" || tv_one.text != "ー") {
+                        val value = tv_one.text.toString()
+                        val arr = value.split(":")
+                        mEndHour += arr[0].toInt()
+                        mEndMinutes += arr[1].toInt()
+                    }
                 } else if (j == 4) {
                     tv_one.setText("01:00")
+                    if (tv_one.text.isNotEmpty() || tv_one.text != "" || tv_one.text != "ー") {
+                        val value = tv_one.text.toString()
+                        val arr = value.split(":")
+                        mBreakHour += arr[0].toInt()
+                        mBreakMinutes += arr[1].toInt()
+                    }
                 } else if (j == 5) {
-                    tv_one.setText("8:30")
+                    var total_start_minutes = 0
+                    var total_end_minutes = 0
+                    var total_break_minutes = 0
+                    if (mStartHour != 0 || mStartMinutes != 0) {
+                        total_start_minutes = mStartHour * 60 + mStartMinutes
+//                        tv_one.setText(tdyWorkingTime.toString())
+                    }
+                    if (mEndHour != 0 || mEndMinutes != 0) {
+                        total_end_minutes = mEndHour * 60 + mEndMinutes
+
+                    }
+                    if (mBreakHour != 0 || mBreakMinutes != 0) {
+                        total_break_minutes = mBreakHour * 60 + mBreakMinutes
+
+                    }
+                    var remainingMinutes = 0
+                    remainingMinutes =
+                        total_end_minutes - (total_start_minutes + total_break_minutes)
+                    var todayWorkHour = 0
+                    var todayWorkMinutes = 0
+                    todayWorkHour = remainingMinutes / 60
+                    todayWorkMinutes = remainingMinutes % 60
+                    if (todayWorkHour != null || todayWorkMinutes != null) {
+                        tv_one.text = todayWorkHour.toString() + ":" + todayWorkMinutes.toString()
+                    }
                     if (tv_one.text != null && tv_one.text.isNotEmpty()) {
 
                         val ab = tv_one.text
@@ -265,18 +327,15 @@ class HomeActivity : AppCompatActivity() {
 
                 tbl_row.addView(tv_one)
 
-
-
-
                 if (tv_one.text == "土") {
                     tv_one.setTextColor(Color.BLUE)
-                    if (tv_one.id == 12) {
-                        tv_one.setText("ahee")
-                    }
                     totalWorkDay -= 1
                 } else if (tv_one.text == "日") {
                     tv_one.setTextColor(Color.RED)
                     totalWorkDay -= 1
+                }
+                if (tv_one.text == "土" || tv_one.text == "日") {
+                    dayId.add(tv_one.id)
                 }
 
 
@@ -290,30 +349,34 @@ class HomeActivity : AppCompatActivity() {
 
                         }
                     }
-
                 }
 
                 for (dayoff in workOffStartHour) {
                     if (tv_one.id == dayoff) {
-                        tv_one.text = "ー"
+                        tv_one.text = ""
                     }
                 }
 
                 for (dayoffEnd in workOffEndHour) {
                     if (tv_one.id == dayoffEnd) {
-                        tv_one.text = "ー"
+                        tv_one.text = ""
                     }
                 }
 
                 for (dayoffBreak in workOffBreakHour) {
                     if (tv_one.id == dayoffBreak) {
-                        tv_one.text = "ー"
+                        tv_one.text = ""
                     }
                 }
 
                 for (dayoffTotal in workOffTotalHour) {
                     if (tv_one.id == dayoffTotal) {
-                        tv_one.text = "ー"
+                        tv_one.text = ""
+                    }
+                }
+                for(columnTwo in startHourColumn){
+                    if(tv_one.id==columnTwo && tv_one.text==""){
+                        totalActualWorkColumnTwo+=1
                     }
                 }
                 tv_one.setOnClickListener {

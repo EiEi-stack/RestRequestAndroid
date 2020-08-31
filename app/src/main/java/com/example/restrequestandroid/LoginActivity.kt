@@ -191,7 +191,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun showNextActivity() {
-        val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+        val intent = Intent(this@LoginActivity, SetTimeActivity::class.java)
         startActivity(intent)
 
     }

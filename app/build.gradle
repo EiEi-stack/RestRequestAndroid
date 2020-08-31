@@ -47,6 +47,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:18.1.0'
     //Facebookの依存関係
     implementation 'com.facebook.android:facebook-login:6.+'
+    // https://mvnrepository.com/artifact/com.itextpdf/itextpdf
+    implementation group: 'com.itextpdf', name: 'itextpdf', version: '5.0.6'
     //noinspection GradleCompatible
     implementation 'com.android.support:design:26.1.0'
 

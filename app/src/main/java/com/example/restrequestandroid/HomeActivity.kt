@@ -2,15 +2,22 @@ package com.example.restrequestandroid
 
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.AsyncTask
 import android.os.Bundle
+import android.os.Environment
 import android.view.Gravity
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.itextpdf.text.Document
+import com.itextpdf.text.Image
+import com.itextpdf.text.pdf.PdfWriter
 import kotlinx.android.synthetic.main.activity_home.*
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -28,12 +35,16 @@ class HomeActivity : AppCompatActivity() {
     private var totalActualWorkColumnTwo = 0
     private var totalWorkingHours = 0
     private var totalWorkingMinutes = 0
+    lateinit var dirpath: String
     var dayId = ArrayList<Int>()
     var workOffStartHour = ArrayList<Int>()
     var workOffEndHour = ArrayList<Int>()
     var workOffBreakHour = ArrayList<Int>()
     var workOffTotalHour = ArrayList<Int>()
     var startHourColumn = ArrayList<Int>()
+    var initStartTime = 0
+    var initEndTime = 0
+    var initBreakTime = 0
     lateinit var mProgressBar: ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +59,15 @@ class HomeActivity : AppCompatActivity() {
         tbl_layout = findViewById<TableLayout>(R.id.tbl_layout)
         val tv_showDate = findViewById<TextView>(R.id.txt_showDate)
         tv_showDate.setText(showcurrentDate.format(calendarobj.time))
+
+        //前画面からデータを習得する
+        val intent = getIntent()
+        val bundle = intent.getBundleExtra("myInitTime")
+        initStartTime = bundle.getInt("init_start")
+        initEndTime = bundle.getInt("init_end")
+        initBreakTime = bundle.getInt("init_break")
+
+
         val dateSetListener = object : DatePickerDialog.OnDateSetListener {
             override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
                 calendarobj.set(Calendar.YEAR, year)
@@ -79,6 +99,49 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
+    private fun layoutToImage() {
+
+        val layout = findViewById<LinearLayout>(R.id.container)
+        //Viewを画像に変更
+        layout.isDrawingCacheEnabled = true
+        layout.measure(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        layout.layout(0, 0, layout.measuredWidth, layout.measuredHeight)
+        layout.buildDrawingCache()
+        val b = Bitmap.createBitmap(layout.getDrawingCache())
+        layout.isDrawingCacheEnabled = false
+        val bmImage = ImageView(applicationContext)
+        bmImage.setImageBitmap(b)
+        layout.addView(bmImage)
+    }
+
+    private fun imageToPDF() {
+        try {
+            val document = Document()
+            dirpath = android.os.Environment.getExternalStorageDirectory().toString()
+            PdfWriter.getInstance(document, FileOutputStream(dirpath + "/NewPDF.pdf"))
+            document.open()
+            val img = Image.getInstance(
+                Environment.getExternalStorageDirectory()
+                    .toString() + File.separator + "image.jpg"
+            )
+            val scaler =
+                ((document.pageSize.width - document.leftMargin() - document.rightMargin() - 0) / img.width) * 100
+            img.scalePercent(scaler)
+            img.alignment = Image.ALIGN_CENTER or Image.ALIGN_TOP
+            document.add(img)
+            document.close()
+            Toast.makeText(applicationContext, "PDF Generated Successfully", Toast.LENGTH_SHORT)
+                .show()
+
+
+        } catch (e: Exception) {
+
+        }
+    }
+
     fun startLoadData() {
         mProgressBar.setCancelable(false)
         mProgressBar.setMessage("Fetching WorkingDays")
@@ -92,7 +155,7 @@ class HomeActivity : AppCompatActivity() {
         totalWorkDay = 0
         allActualWorkDay = 0
         totalActualWorkDay = 0
-        totalActualWorkColumnTwo=0
+        totalActualWorkColumnTwo = 0
         totalWorkingHours = 0
         totalWorkingMinutes = 0
         dayId.clear()
@@ -181,7 +244,7 @@ class HomeActivity : AppCompatActivity() {
             }
             if (j == 2) {
                 var setTotalActualWorkDay = ""
-                totalActualWorkDay =allActualWorkDay-totalActualWorkColumnTwo
+                totalActualWorkDay = allActualWorkDay - totalActualWorkColumnTwo
                 setTotalActualWorkDay = totalActualWorkDay.toString() + "日"
                 tv_one.setText(setTotalActualWorkDay)
             }
@@ -217,9 +280,9 @@ class HomeActivity : AppCompatActivity() {
 
     fun createTableRow() {
         tbl_layout.removeAllViews()
+        supportActionBar?.setTitle(txt_showDate.text)
         addHeader()
         if (txt_showDate.text.isNotEmpty()) {
-            supportActionBar?.setTitle(txt_showDate.text)
 
         }
         for (i in 0 until maxDay) {
@@ -257,10 +320,17 @@ class HomeActivity : AppCompatActivity() {
                     tv_one.setText(dayFormat.format(showCalendarDate.time))
 
                 } else if (j == 2) {
-                    tv_one.setText("09:00")
-                    if (tv_one.text.isNotEmpty() && tv_one.text != "") {
-                        allActualWorkDay += 1
+                    if (initStartTime != 0) {
+                        val hour = initStartTime / 60
+                        val minutes = initStartTime % 60
+                        val hrMin = hour.toString() + ":" + minutes.toString()
+                        tv_one.setText(hrMin)
+                        if (tv_one.text.isNotEmpty() && tv_one.text != "") {
+                            allActualWorkDay += 1
 
+                        }
+                    } else {
+                        tv_one.setText("09:00")
                     }
                     if (tv_one.text.isNotEmpty() || tv_one.text != "" || tv_one.text != "ー") {
                         val value = tv_one.text.toString()
@@ -269,7 +339,15 @@ class HomeActivity : AppCompatActivity() {
                         mStartMinutes += arr[1].toInt()
                     }
                 } else if (j == 3) {
-                    tv_one.setText("18:00")
+                    if (initEndTime != 0) {
+                        val hour = initEndTime / 60
+                        val minutes = initEndTime % 60
+                        val hrMin = hour.toString() + ":" + minutes.toString()
+                        tv_one.setText(hrMin)
+                    } else {
+                        tv_one.setText("18:00")
+
+                    }
                     if (tv_one.text.isNotEmpty() || tv_one.text != "" || tv_one.text != "ー") {
                         val value = tv_one.text.toString()
                         val arr = value.split(":")
@@ -277,7 +355,15 @@ class HomeActivity : AppCompatActivity() {
                         mEndMinutes += arr[1].toInt()
                     }
                 } else if (j == 4) {
-                    tv_one.setText("01:00")
+
+                    if (initBreakTime != 0) {
+                        val hour = initBreakTime / 60
+                        val minutes = initBreakTime % 60
+                        val hrMin = hour.toString() + ":" + minutes.toString()
+                        tv_one.setText(hrMin)
+                    } else {
+                        tv_one.setText("01:00")
+                    }
                     if (tv_one.text.isNotEmpty() || tv_one.text != "" || tv_one.text != "ー") {
                         val value = tv_one.text.toString()
                         val arr = value.split(":")
@@ -374,18 +460,18 @@ class HomeActivity : AppCompatActivity() {
                         tv_one.text = ""
                     }
                 }
-                for(columnTwo in startHourColumn){
-                    if(tv_one.id==columnTwo && tv_one.text==""){
-                        totalActualWorkColumnTwo+=1
+                for (columnTwo in startHourColumn) {
+                    if (tv_one.id == columnTwo && tv_one.text == "") {
+                        totalActualWorkColumnTwo += 1
                     }
                 }
-                tv_one.setOnClickListener {
-                    Toast.makeText(
-                        applicationContext,
-                        "Hey Hello　：" + tv_one.id,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+//                tv_one.setOnClickListener {
+//                    Toast.makeText(
+//                        applicationContext,
+//                        "Hey Hello　：" + tv_one.id,
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//                }
             }
             tbl_layout.addView(tbl_row)
 
@@ -410,9 +496,6 @@ class HomeActivity : AppCompatActivity() {
             createTableRow()
 
         }
-
     }
+
 }
-
-
-

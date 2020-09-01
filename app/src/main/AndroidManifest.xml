@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+      <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -20,7 +20,12 @@
         <activity android:name=".AskWorkingTime" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".SignUpActivity" />
-
+        <service android:name=".HomeActivity"
+            android:permission="android.permission.BIND_PRINT_SERVICE">
+            <intent-filter>
+                <action android:name="android.printservice.PrintService" />
+            </intent-filter>
+        </service>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/maps_api_key" /> <!-- FaceBookActivity -->

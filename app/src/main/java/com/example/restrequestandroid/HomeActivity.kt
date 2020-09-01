@@ -2,12 +2,14 @@ package com.example.restrequestandroid
 
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
+import android.app.TimePickerDialog
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.AsyncTask
 import android.os.Bundle
-import android.os.Environment
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.*
@@ -17,12 +19,15 @@ import com.itextpdf.text.Image
 import com.itextpdf.text.pdf.PdfWriter
 import kotlinx.android.synthetic.main.activity_home.*
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 class HomeActivity : AppCompatActivity() {
+    var TAG = "HomeActivity"
     lateinit var tbl_layout: TableLayout
     lateinit var calendarobj: Calendar
     lateinit var simpleDateFormat: SimpleDateFormat
@@ -36,6 +41,7 @@ class HomeActivity : AppCompatActivity() {
     private var totalWorkingHours = 0
     private var totalWorkingMinutes = 0
     lateinit var dirpath: String
+    lateinit var setTimeEachCalendar: Calendar
     var dayId = ArrayList<Int>()
     var workOffStartHour = ArrayList<Int>()
     var workOffEndHour = ArrayList<Int>()
@@ -55,9 +61,11 @@ class HomeActivity : AppCompatActivity() {
         showcurrentDate = SimpleDateFormat("yyyy年MM月", Locale.JAPAN)
         dayFormat = SimpleDateFormat("EEE", Locale.JAPAN)
         calendarobj = Calendar.getInstance()
+        setTimeEachCalendar = Calendar.getInstance()
         maxDay = calendarobj.getActualMaximum(Calendar.DAY_OF_MONTH)
         tbl_layout = findViewById<TableLayout>(R.id.tbl_layout)
         val tv_showDate = findViewById<TextView>(R.id.txt_showDate)
+        val btn_set = findViewById<TextView>(R.id.btn_print)
         tv_showDate.setText(showcurrentDate.format(calendarobj.time))
 
         //前画面からデータを習得する
@@ -68,8 +76,8 @@ class HomeActivity : AppCompatActivity() {
         initBreakTime = bundle.getInt("init_break")
 
 
-        val dateSetListener = object : DatePickerDialog.OnDateSetListener {
-            override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        val dateSetListener =
+            DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
                 calendarobj.set(Calendar.YEAR, year)
                 calendarobj.set(Calendar.MONTH, month)
                 calendarobj.set(Calendar.DAY_OF_MONTH, dayOfMonth)
@@ -78,7 +86,6 @@ class HomeActivity : AppCompatActivity() {
                 createTableRow()
                 reset()
             }
-        }
         tv_showDate.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 DatePickerDialog(
@@ -90,6 +97,12 @@ class HomeActivity : AppCompatActivity() {
 
 
             }
+        })
+        btn_set.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?) {
+                layoutToImage()
+            }
+
         })
         startLoadData()
         for (i in 0 until 31) {
@@ -104,34 +117,47 @@ class HomeActivity : AppCompatActivity() {
         val layout = findViewById<LinearLayout>(R.id.container)
         //Viewを画像に変更
         layout.isDrawingCacheEnabled = true
-        layout.measure(
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        )
-        layout.layout(0, 0, layout.measuredWidth, layout.measuredHeight)
         layout.buildDrawingCache()
-        val b = Bitmap.createBitmap(layout.getDrawingCache())
-        layout.isDrawingCacheEnabled = false
-        val bmImage = ImageView(applicationContext)
-        bmImage.setImageBitmap(b)
-        layout.addView(bmImage)
+        val bm = layout.getDrawingCache()
+        val share = Intent(Intent.ACTION_SEND)
+        share.setType("image/jpeg")
+        try {
+            val path = File(applicationContext.filesDir, "LayoutImage" + File.separator)
+            if (!path.exists()) {
+                path.mkdir()
+            }
+            Log.d("--filePath", path.toString());
+            val outFile = File(path, "image" + ".jpeg")
+            val outputStrem = FileOutputStream(outFile)
+            bm.compress(Bitmap.CompressFormat.JPEG, 100, outputStrem)
+
+        } catch (e: FileNotFoundException) {
+            Log.e(TAG, "Saving received message failed with ", e)
+        } catch (e: IOException) {
+            Log.e(TAG, "Saving received message failed with ", e)
+        }
+
+
     }
 
     private fun imageToPDF() {
         try {
             val document = Document()
-            dirpath = android.os.Environment.getExternalStorageDirectory().toString()
+            dirpath = File(applicationContext.filesDir, "LayoutImage" + File.separator).toString()
             PdfWriter.getInstance(document, FileOutputStream(dirpath + "/NewPDF.pdf"))
+
             document.open()
             val img = Image.getInstance(
-                Environment.getExternalStorageDirectory()
-                    .toString() + File.separator + "image.jpg"
+                applicationContext.filesDir
+                    .toString() + "LayoutImage" + File.separator + "image.jpeg"
             )
+
             val scaler =
                 ((document.pageSize.width - document.leftMargin() - document.rightMargin() - 0) / img.width) * 100
             img.scalePercent(scaler)
             img.alignment = Image.ALIGN_CENTER or Image.ALIGN_TOP
             document.add(img)
+            Log.d(TAG, "--imageAdded");
             document.close()
             Toast.makeText(applicationContext, "PDF Generated Successfully", Toast.LENGTH_SHORT)
                 .show()
@@ -465,13 +491,25 @@ class HomeActivity : AppCompatActivity() {
                         totalActualWorkColumnTwo += 1
                     }
                 }
-//                tv_one.setOnClickListener {
-//                    Toast.makeText(
-//                        applicationContext,
-//                        "Hey Hello　：" + tv_one.id,
-//                        Toast.LENGTH_LONG
-//                    ).show()
-//                }
+
+                val timeDataSetListener = object : TimePickerDialog.OnTimeSetListener {
+                    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
+                        setTimeEachCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                        setTimeEachCalendar.set(Calendar.MINUTE, minute)
+                        val sdf = SimpleDateFormat("hh:mm", Locale.JAPAN)
+                        tv_one.text=""
+                        tv_one.text = sdf.format(setTimeEachCalendar.time)
+                    }
+
+                }
+                tv_one.setOnClickListener {
+                    TimePickerDialog(
+                        this@HomeActivity, 2, timeDataSetListener,
+                        setTimeEachCalendar.get(Calendar.HOUR_OF_DAY),
+                        setTimeEachCalendar.get(Calendar.MINUTE), true
+                    ).show()
+
+                }
             }
             tbl_layout.addView(tbl_row)
 

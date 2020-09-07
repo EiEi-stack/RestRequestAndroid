@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WorkSchedule</string>
+    <string name="app_name">勤務表</string>
     <string name="title_activity_maps">Maps</string>
     <string name="action_geoolocate">Pick Place</string>
     <string name="default_info_title">Default Location</string>
@@ -17,4 +17,6 @@
     <string name="hello_world">Hello World</string>
     <string name="see_map">See Map</string>
     <string name="signup">SignUp</string>
+    <string name="set">設計</string>
+    <string name="fetch_day">営業日を取得しています</string>
 </resources>

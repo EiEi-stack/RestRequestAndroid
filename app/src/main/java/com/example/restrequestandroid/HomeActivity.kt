@@ -4,19 +4,18 @@ import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.app.TimePickerDialog
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.Typeface
+import android.graphics.*
+import android.graphics.pdf.PdfDocument
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.itextpdf.text.Document
-import com.itextpdf.text.Image
-import com.itextpdf.text.pdf.PdfWriter
 import kotlinx.android.synthetic.main.activity_home.*
 import java.io.File
 import java.io.FileNotFoundException
@@ -51,6 +50,7 @@ class HomeActivity : AppCompatActivity() {
     var initStartTime = 0
     var initEndTime = 0
     var initBreakTime = 0
+    var isClickable = false
     lateinit var mProgressBar: ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,6 +99,7 @@ class HomeActivity : AppCompatActivity() {
             }
         })
         btn_set.setOnClickListener(object : View.OnClickListener {
+            @RequiresApi(Build.VERSION_CODES.KITKAT)
             override fun onClick(v: View?) {
                 layoutToImage()
             }
@@ -112,65 +113,106 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun layoutToImage() {
+        val view = findViewById<LinearLayout>(R.id.container)
+        val scrollView = findViewById<ScrollView>(R.id.scrollView)
+        val totalHeight = view.getChildAt(0).height
+        val totalWidth = view.getChildAt(0).width
+        val bitmap = getBitmapFromView(view, totalHeight, totalWidth)
 
-        val layout = findViewById<LinearLayout>(R.id.container)
-        //Viewを画像に変更
-        layout.isDrawingCacheEnabled = true
-        layout.buildDrawingCache()
-        val bm = layout.getDrawingCache()
-        val share = Intent(Intent.ACTION_SEND)
-        share.setType("image/jpeg")
+        val path = File(applicationContext.filesDir, "LayoutImage" + File.separator + "image.jpeg")
         try {
-            val path = File(applicationContext.filesDir, "LayoutImage" + File.separator)
-            if (!path.exists()) {
-                path.mkdir()
-            }
-            Log.d("--filePath", path.toString());
-            val outFile = File(path, "image" + ".jpeg")
-            val outputStrem = FileOutputStream(outFile)
-            bm.compress(Bitmap.CompressFormat.JPEG, 100, outputStrem)
-
+            val fos = FileOutputStream(path)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            fos.flush()
+            fos.close()
+            MediaStore.Images.Media.insertImage(
+                applicationContext.contentResolver,
+                bitmap,
+                "Screen",
+                "screen"
+            )
         } catch (e: FileNotFoundException) {
-            Log.e(TAG, "Saving received message failed with ", e)
-        } catch (e: IOException) {
-            Log.e(TAG, "Saving received message failed with ", e)
+            Log.e(TAG, "Error at Layout to image is :" + e)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error at Layout to image is :" + e)
         }
-
+        imageToPDF()
 
     }
 
-    private fun imageToPDF() {
-        try {
-            val document = Document()
-            dirpath = File(applicationContext.filesDir, "LayoutImage" + File.separator).toString()
-            PdfWriter.getInstance(document, FileOutputStream(dirpath + "/NewPDF.pdf"))
-
-            document.open()
-            val img = Image.getInstance(
-                applicationContext.filesDir
-                    .toString() + "LayoutImage" + File.separator + "image.jpeg"
-            )
-
-            val scaler =
-                ((document.pageSize.width - document.leftMargin() - document.rightMargin() - 0) / img.width) * 100
-            img.scalePercent(scaler)
-            img.alignment = Image.ALIGN_CENTER or Image.ALIGN_TOP
-            document.add(img)
-            Log.d(TAG, "--imageAdded");
-            document.close()
-            Toast.makeText(applicationContext, "PDF Generated Successfully", Toast.LENGTH_SHORT)
-                .show()
-
-
-        } catch (e: Exception) {
-
+    private fun getBitmapFromView(view: View, totalHeight: Int, totalWidth: Int): Bitmap {
+        val returnedBitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(returnedBitmap)
+        val bgDrawable = view.background
+        if (bgDrawable != null) {
+            bgDrawable.draw(canvas)
+        } else {
+            canvas.drawColor(Color.WHITE)
         }
+        view.draw(canvas)
+        return returnedBitmap
+    }
+//    @RequiresApi(Build.VERSION_CODES.KITKAT)
+//    private fun layoutToImage() {
+//
+//        val layout = findViewById<LinearLayout>(R.id.container)
+//        //Viewを画像に変更
+//        layout.isDrawingCacheEnabled = true
+//        layout.buildDrawingCache()
+//        val bm = layout.getDrawingCache()
+////        val bm = Bitmap.createBitmap(container.getChildAt(0).width,container.getChildAt(0).height,Bitmap.Config.ARGB_8888)
+//
+//        val share = Intent(Intent.ACTION_SEND)
+//        share.setType("image/jpeg")
+//        try {
+//            val path = File(applicationContext.filesDir, "LayoutImage" + File.separator)
+//            if (!path.exists()) {
+//                path.mkdir()
+//            }
+//            Log.d("--filePath", path.toString());
+//            val outFile = File(path, "image" + ".jpeg")
+//            val outputStrem = FileOutputStream(outFile)
+//            bm.compress(Bitmap.CompressFormat.JPEG, 100, outputStrem)
+//            imageToPDF()
+//        } catch (e: FileNotFoundException) {
+//            Log.e(TAG, "Saving received message failed with ", e)
+//        } catch (e: IOException) {
+//            Log.e(TAG, "Saving received message failed with ", e)
+//        }
+//
+//
+//    }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    private fun imageToPDF() {
+        dirpath = File(applicationContext.filesDir, "LayoutImage" + File.separator).toString()
+        val file = dirpath + File.separator + "image.jpeg"
+        val bitmap = BitmapFactory.decodeFile(file)
+        val pdfDocument = PdfDocument()
+        val myPageInfo = PdfDocument.PageInfo.Builder(500, 500, 1).create()
+        val page = pdfDocument.startPage(myPageInfo)
+
+        val rectangle = Rect(0, 0, 100, 100)
+        page.canvas.drawBitmap(bitmap, null, rectangle, null)
+        pdfDocument.finishPage(page)
+
+        val pdfFile = dirpath + File.separator + "myPDF.pdf"
+        val myPDFFile = File(pdfFile)
+        try {
+            pdfDocument.writeTo(FileOutputStream(myPDFFile))
+        } catch (e: IOException) {
+            Log.e(TAG, "Error at :" + e)
+        }
+        pdfDocument.close()
+        val intent = Intent(this@HomeActivity, PDFViewActivity::class.java)
+        startActivity(intent)
     }
 
     fun startLoadData() {
         mProgressBar.setCancelable(false)
-        mProgressBar.setMessage("Fetching WorkingDays")
+        mProgressBar.setMessage(resources.getString(R.string.fetch_day))
         mProgressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         mProgressBar.show()
         LoadDataTask().execute()
@@ -341,11 +383,16 @@ class HomeActivity : AppCompatActivity() {
                 val id = id_i + id_j
                 tv_one.id = id.toInt()
                 if (j == 0) {
+                    isClickable = false
                     tv_one.setText(simpleDateFormat.format(showCalendarDate.time))
+
                 } else if (j == 1) {
+                    isClickable = false
                     tv_one.setText(dayFormat.format(showCalendarDate.time))
 
+
                 } else if (j == 2) {
+                    isClickable = true
                     if (initStartTime != 0) {
                         val hour = initStartTime / 60
                         val minutes = initStartTime % 60
@@ -365,6 +412,7 @@ class HomeActivity : AppCompatActivity() {
                         mStartMinutes += arr[1].toInt()
                     }
                 } else if (j == 3) {
+                    isClickable = true
                     if (initEndTime != 0) {
                         val hour = initEndTime / 60
                         val minutes = initEndTime % 60
@@ -381,7 +429,7 @@ class HomeActivity : AppCompatActivity() {
                         mEndMinutes += arr[1].toInt()
                     }
                 } else if (j == 4) {
-
+                    isClickable = true
                     if (initBreakTime != 0) {
                         val hour = initBreakTime / 60
                         val minutes = initBreakTime % 60
@@ -397,6 +445,7 @@ class HomeActivity : AppCompatActivity() {
                         mBreakMinutes += arr[1].toInt()
                     }
                 } else if (j == 5) {
+                    isClickable = false
                     var total_start_minutes = 0
                     var total_end_minutes = 0
                     var total_break_minutes = 0
@@ -430,10 +479,15 @@ class HomeActivity : AppCompatActivity() {
                         totalWorkingMinutes += arr[1].toInt()
                     }
 
+
                 } else if (j == 7) {
+                    isClickable = false
                     tv_one.setText("入力")
+
                 } else {
+                    isClickable = false
                     tv_one.setText(" ")
+
                 }
                 tv_one.setBackgroundColor(Color.WHITE)
 
@@ -497,18 +551,20 @@ class HomeActivity : AppCompatActivity() {
                         setTimeEachCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                         setTimeEachCalendar.set(Calendar.MINUTE, minute)
                         val sdf = SimpleDateFormat("hh:mm", Locale.JAPAN)
-                        tv_one.text=""
+                        tv_one.text = ""
                         tv_one.text = sdf.format(setTimeEachCalendar.time)
                     }
 
                 }
-                tv_one.setOnClickListener {
-                    TimePickerDialog(
-                        this@HomeActivity, 2, timeDataSetListener,
-                        setTimeEachCalendar.get(Calendar.HOUR_OF_DAY),
-                        setTimeEachCalendar.get(Calendar.MINUTE), true
-                    ).show()
+                if (isClickable == true) {
+                    tv_one.setOnClickListener {
+                        TimePickerDialog(
+                            this@HomeActivity, 2, timeDataSetListener,
+                            setTimeEachCalendar.get(Calendar.HOUR_OF_DAY),
+                            setTimeEachCalendar.get(Calendar.MINUTE), true
+                        ).show()
 
+                    }
                 }
             }
             tbl_layout.addView(tbl_row)
@@ -516,6 +572,11 @@ class HomeActivity : AppCompatActivity() {
         }
 
         addFooter()
+    }
+
+    fun setClickEvent() {
+
+
     }
 
     inner class LoadDataTask : AsyncTask<Integer, Integer, String>() {
@@ -537,3 +598,6 @@ class HomeActivity : AppCompatActivity() {
     }
 
 }
+
+
+

@@ -48,8 +48,9 @@ dependencies {
     //Facebookの依存関係
     implementation 'com.facebook.android:facebook-login:6.+'
     // https://mvnrepository.com/artifact/com.itextpdf/itextpdf
-    implementation group: 'com.itextpdf', name: 'itextpdf', version: '5.0.6'
+    implementation 'com.itextpdf:itextg:5.5.10'
     //noinspection GradleCompatible
     implementation 'com.android.support:design:26.1.0'
+    implementation 'com.github.barteksc:android-pdf-viewer:2.0.3'
 
 }

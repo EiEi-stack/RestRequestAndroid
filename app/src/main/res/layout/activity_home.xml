@@ -1,216 +1,231 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginLeft="5dp"
-    android:layout_marginRight="5dp"
-    android:orientation="vertical"
-    tools:context=".HomeActivity">
+    android:layout_height="match_parent">
 
-    <ScrollView
-        android:id="@+id/scrollView"
+    <LinearLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:orientation="vertical"
+        tools:context=".HomeActivity">
 
-        <LinearLayout
+        <ScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <TableLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:stretchColumns="*">
+                android:orientation="vertical">
 
-                <TableRow
+                <TableLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/darker_gray">
-
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="1dp"
-                        android:layout_weight="0.7"
-                        android:background="@android:color/white"
-                        android:gravity="center"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:text="勤務先名"
-                        android:textAlignment="center"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginRight="1dp"
-                        android:layout_weight="1"
-                        android:background="@android:color/white"
-                        android:paddingLeft="5dp"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:singleLine="true"
-                        android:textAlignment="textStart"
-                        android:textSize="12sp"
-                        tools:ignore="RtlCompat" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginRight="1dp"
-                        android:layout_weight="1"
-                        android:background="@android:color/white"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:text="勤務先連絡先"
-                        android:textAlignment="center"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="0.5"
-                        android:background="@android:color/white"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:text="氏　　名"
-                        android:textAlignment="center"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/darker_gray">
-
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="1dp"
-                        android:layout_marginRight="1dp"
-                        android:layout_marginBottom="1dp"
-                        android:layout_weight="0.7"
-                        android:background="@android:color/white"
-                        android:gravity="center"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:text="会　社　名"
-                        android:textAlignment="center"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="1dp"
-                        android:layout_weight="1"
-                        android:background="@android:color/white"
-                        android:gravity="center"
-                        android:paddingLeft="5dp"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:singleLine="true"
-                        android:text="株式会社ユニオンテック"
-                        android:textAlignment="textStart"
-                        android:textSize="12sp"
-                        tools:ignore="RtlCompat" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginRight="1dp"
-                        android:layout_weight="1"
-                        android:background="@android:color/white"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:text="TEL： 　"
-                        android:textAlignment="center"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="0.5"
-                        android:background="@android:color/white"
-                        android:paddingTop="10dp"
-                        android:paddingRight="10dp"
-                        android:paddingBottom="10dp"
-                        android:text="印"
-                        android:textAlignment="textEnd"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        tools:ignore="RtlCompat" />
-
-                </TableRow>
-
-
-            </TableLayout>
-
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="10dp">
-
-                <TextView
-                    android:id="@+id/txt"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="left"
-                    android:text="勤務年月："
-                    android:textSize="20dp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:stretchColumns="*">
 
-                <TextView
-                    android:id="@+id/txt_showDate"
-                    android:layout_width="wrap_content"
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/darker_gray">
+
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="1dp"
+                            android:layout_weight="0.7"
+                            android:background="@android:color/white"
+                            android:gravity="center"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="勤務先名"
+                            android:textAlignment="center"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="1dp"
+                            android:layout_weight="1"
+                            android:background="@android:color/white"
+                            android:paddingLeft="5dp"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:singleLine="true"
+                            android:textAlignment="textStart"
+                            android:textSize="12sp"
+                            tools:ignore="RtlCompat" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="1dp"
+                            android:layout_weight="1"
+                            android:background="@android:color/white"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="勤務先連絡先"
+                            android:textAlignment="center"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="0.5"
+                            android:background="@android:color/white"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="氏　　名"
+                            android:textAlignment="center"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/darker_gray">
+
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="1dp"
+                            android:layout_marginRight="1dp"
+                            android:layout_marginBottom="1dp"
+                            android:layout_weight="0.7"
+                            android:background="@android:color/white"
+                            android:gravity="center"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="会　社　名"
+                            android:textAlignment="center"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="1dp"
+                            android:layout_weight="1"
+                            android:background="@android:color/white"
+                            android:gravity="center"
+                            android:paddingLeft="5dp"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:singleLine="true"
+                            android:text="株式会社ユニオンテック"
+                            android:textAlignment="textStart"
+                            android:textSize="12sp"
+                            tools:ignore="RtlCompat" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="1dp"
+                            android:layout_weight="1"
+                            android:background="@android:color/white"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="TEL： 　"
+                            android:textAlignment="center"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="0.5"
+                            android:background="@android:color/white"
+                            android:paddingTop="10dp"
+                            android:paddingRight="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="印"
+                            android:textAlignment="textEnd"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            tools:ignore="RtlCompat" />
+
+                    </TableRow>
+
+
+                </TableLayout>
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/txt"
-                    android:text="--/--/----"
-                    android:textSize="20dp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="10dp">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="right"
-                    android:layout_alignParentRight="true"
-                    android:layout_toRightOf="@+id/txt_showDate">
-
-                    <Button
-                        android:id="@+id/btn_print"
+                    <TextView
+                        android:id="@+id/txt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@color/colorPrimary"
-                        android:text="印刷PDF"
-                        android:textAllCaps="false"
-                        android:textColor="@android:color/white" />
+                        android:gravity="left"
+                        android:text="勤務年月："
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
 
-                </LinearLayout>
-            </RelativeLayout>
+                    <TextView
+                        android:id="@+id/txt_showDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/txt"
+                        android:text="--/--/----"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
 
-            <TableLayout
-                android:id="@+id/tbl_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:stretchColumns="*"></TableLayout>
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_toRightOf="@+id/txt_showDate"
+                        android:gravity="right">
+
+                        <Button
+                            android:id="@+id/btn_print"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@color/colorPrimary"
+                            android:text="印刷PDF"
+                            android:textAllCaps="false"
+                            android:textColor="@android:color/white" />
+
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <TableLayout
+                    android:id="@+id/tbl_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:stretchColumns="*"></TableLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer"/>
+</androidx.drawerlayout.widget.DrawerLayout>

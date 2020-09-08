@@ -19,4 +19,6 @@
     <string name="signup">SignUp</string>
     <string name="set">設計</string>
     <string name="fetch_day">営業日を取得しています</string>
+    <string name="menu_title_header">勤務表</string>
+    <string name="SaveThisMonthWorkingTime">今月の勤務表保存する</string>
 </resources>

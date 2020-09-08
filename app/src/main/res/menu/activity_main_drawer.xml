@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/top"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_time"
+            android:icon="@drawable/ic_timelapse_black_24dp"
+            android:title="@string/menu_title_header" />
+    </group>
+
+    <group android:id="@+id/menu_body">
+        <item
+            android:id="@+id/menu_saveCurrentMonthWorkingTime"
+            android:icon="@drawable/ic_save_black_24dp"
+            android:title="@string/SaveThisMonthWorkingTime" />
+        <item
+            android:id="@+id/menu_Excel"
+            android:icon="@drawable/ic_description_black_24dp"
+            android:title="Excelとして表示する" />
+        <item
+            android:id="@+id/menu_Print"
+            android:icon="@drawable/ic_print_black_24dp"
+            android:title="印刷する" />
+
+    </group>
+
+</menu>

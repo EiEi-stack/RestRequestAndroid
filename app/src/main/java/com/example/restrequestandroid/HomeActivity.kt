@@ -9,23 +9,29 @@ import android.graphics.pdf.PdfDocument
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
+import android.view.MenuItem
 import android.view.View
-import android.widget.*
+import android.widget.TableLayout
+import android.widget.TableRow
+import android.widget.TextView
+import android.widget.TimePicker
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_home.*
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     var TAG = "HomeActivity"
     lateinit var tbl_layout: TableLayout
     lateinit var calendarobj: Calendar
@@ -101,7 +107,8 @@ class HomeActivity : AppCompatActivity() {
         btn_set.setOnClickListener(object : View.OnClickListener {
             @RequiresApi(Build.VERSION_CODES.KITKAT)
             override fun onClick(v: View?) {
-                layoutToImage()
+//                layoutToImage()
+                excelPrint()
             }
 
         })
@@ -111,36 +118,48 @@ class HomeActivity : AppCompatActivity() {
             startHourColumn.add(columnTwoId.toInt())
         }
 
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
+        val toggle = ActionBarDrawerToggle(this,drawerLayout,0,0)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        val navigationView = findViewById<NavigationView>(R.id.nav_view)
+        navigationView.setNavigationItemSelectedListener(this)
+
+    }
+
+    private fun excelPrint() {
+
     }
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
-    private fun layoutToImage() {
-        val view = findViewById<LinearLayout>(R.id.container)
-        val scrollView = findViewById<ScrollView>(R.id.scrollView)
-        val totalHeight = view.getChildAt(0).height
-        val totalWidth = view.getChildAt(0).width
-        val bitmap = getBitmapFromView(view, totalHeight, totalWidth)
-
-        val path = File(applicationContext.filesDir, "LayoutImage" + File.separator + "image.jpeg")
-        try {
-            val fos = FileOutputStream(path)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-            fos.flush()
-            fos.close()
-            MediaStore.Images.Media.insertImage(
-                applicationContext.contentResolver,
-                bitmap,
-                "Screen",
-                "screen"
-            )
-        } catch (e: FileNotFoundException) {
-            Log.e(TAG, "Error at Layout to image is :" + e)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error at Layout to image is :" + e)
-        }
-        imageToPDF()
-
-    }
+//    private fun layoutToImage() {
+//        val view = findViewById<LinearLayout>(R.id.container)
+//        val scrollView = findViewById<ScrollView>(R.id.scrollView)
+//        val totalHeight = view.getChildAt(0).height
+//        val totalWidth = view.getChildAt(0).width
+//        val bitmap = getBitmapFromView(view, totalHeight, totalWidth)
+//
+//        val path = File(applicationContext.filesDir, "LayoutImage" + File.separator + "image.jpeg")
+//        try {
+//            val fos = FileOutputStream(path)
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+//            fos.flush()
+//            fos.close()
+//            MediaStore.Images.Media.insertImage(
+//                applicationContext.contentResolver,
+//                bitmap,
+//                "Screen",
+//                "screen"
+//            )
+//        } catch (e: FileNotFoundException) {
+//            Log.e(TAG, "Error at Layout to image is :" + e)
+//        } catch (e: Exception) {
+//            Log.e(TAG, "Error at Layout to image is :" + e)
+//        }
+//        imageToPDF()
+//
+//    }
 
     private fun getBitmapFromView(view: View, totalHeight: Int, totalWidth: Int): Bitmap {
         val returnedBitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888)
@@ -595,6 +614,20 @@ class HomeActivity : AppCompatActivity() {
             createTableRow()
 
         }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == R.id.menu_saveCurrentMonthWorkingTime) {
+
+        } else if (id == R.id.menu_Excel) {
+
+        } else if (id == R.id.menu_Print) {
+
+        }
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
+        drawerLayout.closeDrawer(GravityCompat.START)
+        return true
     }
 
 }

@@ -325,38 +325,55 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 tv_one.layoutParams = params
             }
             if (j == 1) {
-                var setTotalWorkDay = ""
-                setTotalWorkDay = totalWorkDay.toString() + "日"
-                tv_one.setText(setTotalWorkDay)
+                ftCountTotalWorkDay(tv_one)
             }
             if (j == 2) {
-                var setTotalActualWorkDay = ""
-                totalActualWorkDay = allActualWorkDay - totalActualWorkColumnTwo
-                setTotalActualWorkDay = totalActualWorkDay.toString() + "日"
-                tv_one.setText(setTotalActualWorkDay)
+                ftCountTotalActualWorkDay(tv_one)
             }
             if (j == 3) {
-                val differenthour = totalWorkDay - totalActualWorkDay
-                var remainHour = ""
-                remainHour = differenthour.toString() + "日"
-                tv_one.setText(remainHour)
+                ftCountToalRemainingHours(tv_one)
             }
             if (j == 4) {
-                var hour = 0
-                var minutes = 0
-                var totalhour = 0
-                var totalminutes = 0
-                var totaltime = ""
-                hour = totalWorkingMinutes / 60
-                minutes = totalWorkingMinutes % 60
-                totalhour = totalWorkingHours + hour
-                totalminutes = minutes
-                totaltime = totalhour.toString() + ":" + totalminutes.toString()
-                tv_one.setText(totaltime)
+                ftCountTotalTime(tv_one)
             }
             tbl_row_footer.addView(tv_one)
         }
         tbl_layout.addView(tbl_row_footer)
+    }
+
+    private fun ftCountTotalTime(tvOne: TextView) {
+        var hour = 0
+        var minutes = 0
+        var totalhour = 0
+        var totalminutes = 0
+        var totaltime = ""
+        hour = totalWorkingMinutes / 60
+        minutes = totalWorkingMinutes % 60
+        totalhour = totalWorkingHours + hour
+        totalminutes = minutes
+        totaltime = totalhour.toString() + ":" + totalminutes.toString()
+        tvOne.setText(totaltime)
+    }
+
+    private fun ftCountToalRemainingHours(tvOne: TextView) {
+        val differenthour = totalWorkDay - totalActualWorkDay
+        var remainHour = ""
+        remainHour = differenthour.toString() + "日"
+        tvOne.setText(remainHour)
+    }
+
+    private fun ftCountTotalWorkDay(tvOne: TextView) {
+        var setTotalWorkDay = ""
+        setTotalWorkDay = totalWorkDay.toString() + "日"
+        tvOne.setText(setTotalWorkDay)
+    }
+
+    private fun ftCountTotalActualWorkDay(tvOne: TextView) {
+        var setTotalActualWorkDay = ""
+        totalActualWorkDay =  totalActualWorkColumnTwo
+//        totalActualWorkDay = allActualWorkDay
+        setTotalActualWorkDay = totalActualWorkDay.toString() + "日"
+        tvOne.setText(setTotalActualWorkDay)
     }
 
     fun updateDateInView() {
@@ -369,9 +386,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         tbl_layout.removeAllViews()
         supportActionBar?.setTitle(txt_showDate.text)
         addHeader()
-        if (txt_showDate.text.isNotEmpty()) {
-
-        }
         for (i in 0 until maxDay) {
             totalWorkDay += 1
             var mStartHour = 0
@@ -417,12 +431,13 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         val minutes = initStartTime % 60
                         val hrMin = hour.toString() + ":" + minutes.toString()
                         tv_one.setText(hrMin)
-                        if (tv_one.text.isNotEmpty() && tv_one.text != "") {
-                            allActualWorkDay += 1
 
-                        }
                     } else {
                         tv_one.setText("09:00")
+                    }
+                    if (tv_one.text.isNotEmpty() && tv_one.text != "") {
+                        allActualWorkDay += 1
+
                     }
                     if (tv_one.text.isNotEmpty() || tv_one.text != "" || tv_one.text != "ー") {
                         val value = tv_one.text.toString()
@@ -560,7 +575,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 }
                 for (columnTwo in startHourColumn) {
-                    if (tv_one.id == columnTwo && tv_one.text == "") {
+                    if (tv_one.id == columnTwo && tv_one.text != "") {
                         totalActualWorkColumnTwo += 1
                     }
                 }
@@ -593,11 +608,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         addFooter()
     }
 
-    fun setClickEvent() {
-
-
-    }
-
     inner class LoadDataTask : AsyncTask<Integer, Integer, String>() {
         override fun doInBackground(vararg params: Integer?): String {
             try {
@@ -623,6 +633,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else if (id == R.id.menu_Excel) {
 
         } else if (id == R.id.menu_Print) {
+
+        }else if (id == R.id.send_mail) {
 
         }
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)

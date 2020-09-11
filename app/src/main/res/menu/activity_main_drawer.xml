@@ -22,6 +22,10 @@
             android:id="@+id/menu_Print"
             android:icon="@drawable/ic_print_black_24dp"
             android:title="印刷する" />
+        <item
+            android:id="@+id/send_mail"
+            android:icon="@drawable/ic_email_black_24dp"
+            android:title="@string/sendmail" />
 
     </group>
 

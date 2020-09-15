@@ -636,6 +636,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         }else if (id == R.id.send_mail) {
 
+        }else if (id == R.id.company_profile) {
+            startActivity(Intent(this@HomeActivity,CompanyProfile::class.java))
         }
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)

@@ -18,7 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".PDFViewActivity"></activity>
+        <activity android:name=".CompanyProfile"></activity>
+        <activity android:name=".PDFViewActivity" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".AskWorkingTime" />
         <activity android:name=".LoginActivity" />

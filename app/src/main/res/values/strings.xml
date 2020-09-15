@@ -22,4 +22,10 @@
     <string name="menu_title_header">勤務表</string>
     <string name="SaveThisMonthWorkingTime">今月の勤務表保存する</string>
     <string name="sendmail">メールを送信する</string>
+    <string name="company_profile">会社概要</string>
+    <string name="companyname">株式会社ユニオンテック</string>
+    <string name="FaxNO">050-3397-6075</string>
+    <string name="company_ph">045-717-9105</string>
+    <string name="companyAddress">230-0051 神奈川県横浜市鶴見区鶴見中央4-29-17</string>
+    <string name="companyEmail">kskin@union-tec.co.jp</string>
 </resources>

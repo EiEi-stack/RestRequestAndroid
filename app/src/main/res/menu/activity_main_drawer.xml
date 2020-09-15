@@ -26,6 +26,10 @@
             android:id="@+id/send_mail"
             android:icon="@drawable/ic_email_black_24dp"
             android:title="@string/sendmail" />
+        <item
+            android:id="@+id/company_profile"
+            android:icon="@drawable/ic_email_black_24dp"
+            android:title="@string/company_profile" />
 
     </group>
 

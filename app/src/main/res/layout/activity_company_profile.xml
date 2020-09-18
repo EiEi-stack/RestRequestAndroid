@@ -95,11 +95,13 @@
             android:paddingLeft="25dp">
 
             <ImageView
+                android:id="@+id/img_smartPhone"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:src="@drawable/ic_smartphone" />
 
             <TextView
+                android:id="@+id/tv_smartPhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -116,11 +118,13 @@
             android:paddingLeft="25dp">
 
             <ImageView
+                android:id="@+id/img_localPhone"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:src="@drawable/ic_local_phone" />
 
             <TextView
+                android:id="@+id/tv_localPhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

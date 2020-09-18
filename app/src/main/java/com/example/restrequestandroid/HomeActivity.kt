@@ -1,5 +1,6 @@
 package com.example.restrequestandroid
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.app.TimePickerDialog
@@ -16,7 +17,6 @@ import android.view.View
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
-import android.widget.TimePicker
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -32,20 +32,17 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    var TAG = "HomeActivity"
-    lateinit var tbl_layout: TableLayout
-    lateinit var calendarobj: Calendar
+    private var TAG = "HomeActivity"
+    lateinit var tableLayout: TableLayout
+    lateinit var calendarObj: Calendar
     lateinit var simpleDateFormat: SimpleDateFormat
-    lateinit var showcurrentDate: SimpleDateFormat
     lateinit var dayFormat: SimpleDateFormat
     private var maxDay = 0
-    private var totalWorkDay = 0
-    private var allActualWorkDay = 0
+    private var workDayOfMonth = 0
     private var totalActualWorkDay = 0
     private var totalActualWorkColumnTwo = 0
     private var totalWorkingHours = 0
     private var totalWorkingMinutes = 0
-    lateinit var dirpath: String
     lateinit var setTimeEachCalendar: Calendar
     var dayId = ArrayList<Int>()
     var workOffStartHour = ArrayList<Int>()
@@ -64,15 +61,15 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mProgressBar = ProgressDialog(this)
         setContentView(R.layout.activity_home)
         simpleDateFormat = SimpleDateFormat("dd")
-        showcurrentDate = SimpleDateFormat("yyyy年MM月", Locale.JAPAN)
+        var showCurrentDate: SimpleDateFormat = SimpleDateFormat("yyyy年MM月", Locale.JAPAN)
         dayFormat = SimpleDateFormat("EEE", Locale.JAPAN)
-        calendarobj = Calendar.getInstance()
+        calendarObj = Calendar.getInstance()
         setTimeEachCalendar = Calendar.getInstance()
-        maxDay = calendarobj.getActualMaximum(Calendar.DAY_OF_MONTH)
-        tbl_layout = findViewById<TableLayout>(R.id.tbl_layout)
-        val tv_showDate = findViewById<TextView>(R.id.txt_showDate)
-        val btn_set = findViewById<TextView>(R.id.btn_print)
-        tv_showDate.setText(showcurrentDate.format(calendarobj.time))
+        maxDay = calendarObj.getActualMaximum(Calendar.DAY_OF_MONTH)
+        tableLayout = findViewById<TableLayout>(R.id.tbl_layout)
+        val tvShowDate = findViewById<TextView>(R.id.txt_showDate)
+        val btnSet = findViewById<TextView>(R.id.btn_print)
+        tvShowDate.text = showCurrentDate.format(calendarObj.time)
 
         //前画面からデータを習得する
         val intent = getIntent()
@@ -84,27 +81,27 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val dateSetListener =
             DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-                calendarobj.set(Calendar.YEAR, year)
-                calendarobj.set(Calendar.MONTH, month)
-                calendarobj.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                maxDay = calendarobj.getActualMaximum(Calendar.DAY_OF_MONTH)
+                calendarObj.set(Calendar.YEAR, year)
+                calendarObj.set(Calendar.MONTH, month)
+                calendarObj.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                maxDay = calendarObj.getActualMaximum(Calendar.DAY_OF_MONTH)
                 updateDateInView()
                 createTableRow()
                 reset()
             }
-        tv_showDate.setOnClickListener(object : View.OnClickListener {
+        tvShowDate.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 DatePickerDialog(
                     this@HomeActivity, dateSetListener,
-                    calendarobj.get(Calendar.YEAR),
-                    calendarobj.get(Calendar.MONTH),
-                    calendarobj.get(Calendar.DAY_OF_MONTH)
+                    calendarObj.get(Calendar.YEAR),
+                    calendarObj.get(Calendar.MONTH),
+                    calendarObj.get(Calendar.DAY_OF_MONTH)
                 ).show()
 
 
             }
         })
-        btn_set.setOnClickListener(object : View.OnClickListener {
+        btnSet.setOnClickListener(object : View.OnClickListener {
             @RequiresApi(Build.VERSION_CODES.KITKAT)
             override fun onClick(v: View?) {
 //                layoutToImage()
@@ -119,7 +116,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
-        val toggle = ActionBarDrawerToggle(this,drawerLayout,0,0)
+        val toggle = ActionBarDrawerToggle(this, drawerLayout, 0, 0)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
@@ -206,8 +203,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun imageToPDF() {
-        dirpath = File(applicationContext.filesDir, "LayoutImage" + File.separator).toString()
-        val file = dirpath + File.separator + "image.jpeg"
+        val dirPath = File(applicationContext.filesDir, "LayoutImage" + File.separator).toString()
+        val file = dirPath + File.separator + "image.jpeg"
         val bitmap = BitmapFactory.decodeFile(file)
         val pdfDocument = PdfDocument()
         val myPageInfo = PdfDocument.PageInfo.Builder(500, 500, 1).create()
@@ -217,19 +214,19 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         page.canvas.drawBitmap(bitmap, null, rectangle, null)
         pdfDocument.finishPage(page)
 
-        val pdfFile = dirpath + File.separator + "myPDF.pdf"
-        val myPDFFile = File(pdfFile)
+        val pdfFile = dirPath + File.separator + "myPDF.pdf"
+        val myPdfFile = File(pdfFile)
         try {
-            pdfDocument.writeTo(FileOutputStream(myPDFFile))
+            pdfDocument.writeTo(FileOutputStream(myPdfFile))
         } catch (e: IOException) {
-            Log.e(TAG, "Error at :" + e)
+            Log.e(TAG, "Error at :$e")
         }
         pdfDocument.close()
         val intent = Intent(this@HomeActivity, PDFViewActivity::class.java)
         startActivity(intent)
     }
 
-    fun startLoadData() {
+    private fun startLoadData() {
         mProgressBar.setCancelable(false)
         mProgressBar.setMessage(resources.getString(R.string.fetch_day))
         mProgressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER)
@@ -239,8 +236,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun reset() {
-        totalWorkDay = 0
-        allActualWorkDay = 0
+        workDayOfMonth = 0
         totalActualWorkDay = 0
         totalActualWorkColumnTwo = 0
         totalWorkingHours = 0
@@ -256,8 +252,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun addHeader() {
-        val tbl_row = TableRow(applicationContext)
-        tbl_row.setBackgroundColor(Color.BLACK)
+        val tblRow = TableRow(applicationContext)
+        tblRow.setBackgroundColor(Color.BLACK)
         val layoutParams =
             TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
@@ -265,80 +261,80 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             )
         layoutParams.setMargins(1, 1, 1, 1)
         for (j in 0 until 8) {
-            val tv_one = TextView(applicationContext)
-            tv_one.setPadding(0, 10, 0, 10)
-            tv_one.setTextSize(14F)
-            tv_one.setTypeface(null, Typeface.BOLD)
-            tv_one.setBackgroundColor(Color.LTGRAY)
+            val tvHeader = TextView(applicationContext)
+            tvHeader.setPadding(0, 10, 0, 10)
+            tvHeader.textSize = 14F
+            tvHeader.setTypeface(null, Typeface.BOLD)
+            tvHeader.setBackgroundColor(Color.LTGRAY)
             if (j == 0) {
-                tv_one.setText("日付")
+                tvHeader.text = "日付"
             }
             if (j == 1) {
-                tv_one.setText("曜日")
+                tvHeader.text = "曜日"
             }
             if (j == 2) {
-                tv_one.setText("始業時間")
+                tvHeader.text = "始業時間"
             }
             if (j == 3) {
-                tv_one.setText("終業時間")
+                tvHeader.text = "終業時間"
             }
             if (j == 4) {
-                tv_one.setText("休憩時間")
+                tvHeader.text = "休憩時間"
             }
             if (j == 5) {
-                tv_one.setText("実働時間")
+                tvHeader.text = "実働時間"
             }
             if (j == 6) {
-                tv_one.setText("備考")
+                tvHeader.text = "備考"
             }
             if (j == 7) {
-                tv_one.setText("機能")
+                tvHeader.text = "機能"
             }
-            tbl_row.addView(tv_one)
+            tblRow.addView(tvHeader)
         }
-        tbl_layout.addView(tbl_row)
+        tableLayout.addView(tblRow)
     }
 
     private fun addFooter() {
-        val tbl_row_footer = TableRow(applicationContext)
-        tbl_row_footer.setBackgroundColor(Color.LTGRAY)
+        val tblFooter = TableRow(applicationContext)
+        tblFooter.setBackgroundColor(Color.LTGRAY)
         val layoutParams =
             TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.MATCH_PARENT
             )
         layoutParams.setMargins(1, 1, 1, 1)
-        tbl_row_footer.layoutParams = layoutParams
+        tblFooter.layoutParams = layoutParams
 
-        val params = tbl_row_footer.getLayoutParams() as TableRow.LayoutParams
+        val params = tblFooter.getLayoutParams() as TableRow.LayoutParams
         params.span = 2
 
         for (j in 0 until 6) {
 
-            val tv_one = TextView(applicationContext)
-            tv_one.setPadding(20, 10, 0, 10)
-            tv_one.setTextSize(14F)
-            tv_one.setTypeface(null, Typeface.BOLD)
-            tv_one.setBackgroundColor(Color.LTGRAY)
+            val tvFooter = TextView(applicationContext)
+            tvFooter.setPadding(20, 10, 0, 10)
+            tvFooter.textSize = 14F
+            tvFooter.setTypeface(null, Typeface.BOLD)
+            tvFooter.setBackgroundColor(Color.LTGRAY)
             if (j == 0) {
-                tv_one.setText("当月合計")
-                tv_one.layoutParams = params
+                tvFooter.setText("当月合計")
+                tvFooter.layoutParams = params
             }
             if (j == 1) {
-                ftCountTotalWorkDay(tv_one)
+                ftCountTotalWorkDay(tvFooter)
             }
             if (j == 2) {
-                ftCountTotalActualWorkDay(tv_one)
+                ftCountTotalActualWorkDay(tvFooter)
             }
             if (j == 3) {
-                ftCountToalRemainingHours(tv_one)
+                ftCountTotalRemainingHours(tvFooter)
             }
             if (j == 4) {
-                ftCountTotalTime(tv_one)
+                ftCountTotalTime(tvFooter)
             }
-            tbl_row_footer.addView(tv_one)
+            tblFooter.addView(tvFooter)
         }
-        tbl_layout.addView(tbl_row_footer)
+        tableLayout.addView(tblFooter)
     }
 
     private fun ftCountTotalTime(tvOne: TextView) {
@@ -352,42 +348,41 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         totalhour = totalWorkingHours + hour
         totalminutes = minutes
         totaltime = totalhour.toString() + ":" + totalminutes.toString()
-        tvOne.setText(totaltime)
+        tvOne.text = totaltime
     }
 
-    private fun ftCountToalRemainingHours(tvOne: TextView) {
-        val differenthour = totalWorkDay - totalActualWorkDay
+    private fun ftCountTotalRemainingHours(tvOne: TextView) {
+        val differentHour = workDayOfMonth - totalActualWorkDay
         var remainHour = ""
-        remainHour = differenthour.toString() + "日"
-        tvOne.setText(remainHour)
+        remainHour = differentHour.toString() + "日"
+        tvOne.text = remainHour
     }
 
     private fun ftCountTotalWorkDay(tvOne: TextView) {
         var setTotalWorkDay = ""
-        setTotalWorkDay = totalWorkDay.toString() + "日"
-        tvOne.setText(setTotalWorkDay)
+        setTotalWorkDay = workDayOfMonth.toString() + "日"
+        tvOne.text = setTotalWorkDay
     }
 
     private fun ftCountTotalActualWorkDay(tvOne: TextView) {
         var setTotalActualWorkDay = ""
-        totalActualWorkDay =  totalActualWorkColumnTwo
-//        totalActualWorkDay = allActualWorkDay
+        totalActualWorkDay = totalActualWorkColumnTwo
         setTotalActualWorkDay = totalActualWorkDay.toString() + "日"
-        tvOne.setText(setTotalActualWorkDay)
+        tvOne.text = setTotalActualWorkDay
     }
 
-    fun updateDateInView() {
+    private fun updateDateInView() {
         val sdf = SimpleDateFormat("y年 M月", Locale.JAPAN)
         txt_showDate.text = ""
-        txt_showDate.text = sdf.format(calendarobj.time)
+        txt_showDate.text = sdf.format(calendarObj.time)
     }
 
     fun createTableRow() {
-        tbl_layout.removeAllViews()
-        supportActionBar?.setTitle(txt_showDate.text)
+        tableLayout.removeAllViews()
+        supportActionBar?.title = txt_showDate.text
         addHeader()
         for (i in 0 until maxDay) {
-            totalWorkDay += 1
+            workDayOfMonth += 1
             var mStartHour = 0
             var mStartMinutes = 0
             var mEndHour = 0
@@ -395,10 +390,10 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             var mBreakHour = 0
             var mBreakMinutes = 0
             val showCalendarDate = Calendar.getInstance()
-            showCalendarDate.set(Calendar.MONTH, calendarobj.get(Calendar.MONTH))
+            showCalendarDate.set(Calendar.MONTH, calendarObj.get(Calendar.MONTH))
             showCalendarDate.set(Calendar.DAY_OF_MONTH, i + 1)
-            val tbl_row = TableRow(applicationContext)
-            tbl_row.setBackgroundColor(Color.GRAY)
+            val tblRow = TableRow(applicationContext)
+            tblRow.setBackgroundColor(Color.GRAY)
             val layoutParams =
                 TableRow.LayoutParams(
                     TableRow.LayoutParams.WRAP_CONTENT,
@@ -407,21 +402,21 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             layoutParams.setMargins(1, 1, 1, 1)
             for (j in 0 until 8) {
 
-                val tv_one = TextView(applicationContext)
-                tv_one.setPadding(0, 10, 0, 10)
-                tv_one.gravity = Gravity.CENTER
-                tv_one.setTextSize(12F)
+                val tvField = TextView(applicationContext)
+                tvField.setPadding(0, 10, 0, 10)
+                tvField.gravity = Gravity.CENTER
+                tvField.textSize = 12F
                 val id_i = i.toString()
                 val id_j = j.toString()
                 val id = id_i + id_j
-                tv_one.id = id.toInt()
+                tvField.id = id.toInt()
                 if (j == 0) {
                     isClickable = false
-                    tv_one.setText(simpleDateFormat.format(showCalendarDate.time))
+                    tvField.setText(simpleDateFormat.format(showCalendarDate.time))
 
                 } else if (j == 1) {
                     isClickable = false
-                    tv_one.setText(dayFormat.format(showCalendarDate.time))
+                    tvField.setText(dayFormat.format(showCalendarDate.time))
 
 
                 } else if (j == 2) {
@@ -429,18 +424,17 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     if (initStartTime != 0) {
                         val hour = initStartTime / 60
                         val minutes = initStartTime % 60
-                        val hrMin = hour.toString() + ":" + minutes.toString()
-                        tv_one.setText(hrMin)
+                        val hrMin = "$hour:$minutes"
+                        tvField.text = hrMin
 
                     } else {
-                        tv_one.setText("09:00")
+                        tvField.text = "09:00"
                     }
-                    if (tv_one.text.isNotEmpty() && tv_one.text != "") {
-                        allActualWorkDay += 1
+                    if (tvField.text.isNotEmpty() && tvField.text != "") {
 
                     }
-                    if (tv_one.text.isNotEmpty() || tv_one.text != "" || tv_one.text != "ー") {
-                        val value = tv_one.text.toString()
+                    if (tvField.text.isNotEmpty() || tvField.text != "" || tvField.text != "ー") {
+                        val value = tvField.text.toString()
                         val arr = value.split(":")
                         mStartHour += arr[0].toInt()
                         mStartMinutes += arr[1].toInt()
@@ -450,14 +444,14 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     if (initEndTime != 0) {
                         val hour = initEndTime / 60
                         val minutes = initEndTime % 60
-                        val hrMin = hour.toString() + ":" + minutes.toString()
-                        tv_one.setText(hrMin)
+                        val hrMin = "$hour:$minutes"
+                        tvField.text = hrMin
                     } else {
-                        tv_one.setText("18:00")
+                        tvField.text = "18:00"
 
                     }
-                    if (tv_one.text.isNotEmpty() || tv_one.text != "" || tv_one.text != "ー") {
-                        val value = tv_one.text.toString()
+                    if (tvField.text.isNotEmpty() || tvField.text != "" || tvField.text != "ー") {
+                        val value = tvField.text.toString()
                         val arr = value.split(":")
                         mEndHour += arr[0].toInt()
                         mEndMinutes += arr[1].toInt()
@@ -467,81 +461,55 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     if (initBreakTime != 0) {
                         val hour = initBreakTime / 60
                         val minutes = initBreakTime % 60
-                        val hrMin = hour.toString() + ":" + minutes.toString()
-                        tv_one.setText(hrMin)
+                        val hrMin = "$hour:$minutes"
+                        tvField.text = hrMin
                     } else {
-                        tv_one.setText("01:00")
+                        tvField.text = "01:00"
                     }
-                    if (tv_one.text.isNotEmpty() || tv_one.text != "" || tv_one.text != "ー") {
-                        val value = tv_one.text.toString()
+                    if (tvField.text.isNotEmpty() || tvField.text != "" || tvField.text != "ー") {
+                        val value = tvField.text.toString()
                         val arr = value.split(":")
                         mBreakHour += arr[0].toInt()
                         mBreakMinutes += arr[1].toInt()
                     }
                 } else if (j == 5) {
                     isClickable = false
-                    var total_start_minutes = 0
-                    var total_end_minutes = 0
-                    var total_break_minutes = 0
-                    if (mStartHour != 0 || mStartMinutes != 0) {
-                        total_start_minutes = mStartHour * 60 + mStartMinutes
-//                        tv_one.setText(tdyWorkingTime.toString())
-                    }
-                    if (mEndHour != 0 || mEndMinutes != 0) {
-                        total_end_minutes = mEndHour * 60 + mEndMinutes
-
-                    }
-                    if (mBreakHour != 0 || mBreakMinutes != 0) {
-                        total_break_minutes = mBreakHour * 60 + mBreakMinutes
-
-                    }
-                    var remainingMinutes = 0
-                    remainingMinutes =
-                        total_end_minutes - (total_start_minutes + total_break_minutes)
-                    var todayWorkHour = 0
-                    var todayWorkMinutes = 0
-                    todayWorkHour = remainingMinutes / 60
-                    todayWorkMinutes = remainingMinutes % 60
-                    if (todayWorkHour != null || todayWorkMinutes != null) {
-                        tv_one.text = todayWorkHour.toString() + ":" + todayWorkMinutes.toString()
-                    }
-                    if (tv_one.text != null && tv_one.text.isNotEmpty()) {
-
-                        val ab = tv_one.text
-                        val arr = ab.split(":")
-                        totalWorkingHours += arr[0].toInt()
-                        totalWorkingMinutes += arr[1].toInt()
-                    }
-
-
+                    val arrayWorkingHourInfo = ArrayList<Int>()
+                    arrayWorkingHourInfo.add(mStartHour)
+                    arrayWorkingHourInfo.add(mStartMinutes)
+                    arrayWorkingHourInfo.add(mEndHour)
+                    arrayWorkingHourInfo.add(mEndMinutes)
+                    arrayWorkingHourInfo.add(mBreakHour)
+                    arrayWorkingHourInfo.add(mBreakMinutes)
+                    funTodayWorkingHour(tvField, arrayWorkingHourInfo)
                 } else if (j == 7) {
                     isClickable = false
-                    tv_one.setText("入力")
+                    tvField.text = "入力"
 
                 } else {
                     isClickable = false
-                    tv_one.setText(" ")
+                    tvField.text = " "
 
                 }
-                tv_one.setBackgroundColor(Color.WHITE)
+                tvField.setBackgroundColor(Color.WHITE)
 
-                tbl_row.addView(tv_one)
+                tblRow.addView(tvField)
 
-                if (tv_one.text == "土") {
-                    tv_one.setTextColor(Color.BLUE)
-                    totalWorkDay -= 1
-                } else if (tv_one.text == "日") {
-                    tv_one.setTextColor(Color.RED)
-                    totalWorkDay -= 1
+                if (tvField.text == "土") {
+                    tvField.setTextColor(Color.BLUE)
+                    workDayOfMonth -= 1
+                } else if (tvField.text == "日") {
+                    tvField.setTextColor(Color.RED)
+                    workDayOfMonth -= 1
                 }
-                if (tv_one.text == "土" || tv_one.text == "日") {
-                    dayId.add(tv_one.id)
+                if (tvField.text == "土" || tvField.text == "日") {
+                    dayId.add(tvField.id)
                 }
 
 
                 for (day in dayId) {
-                    if (tv_one.id == day) {
-                        if (tv_one.text == "土" || tv_one.text == "日") {
+                    if (tvField.id == day) {
+                        if (tvField.text == "土" || tvField.text == "日") {
                             workOffStartHour.add(day + 1)
                             workOffEndHour.add(day + 2)
                             workOffBreakHour.add(day + 3)
@@ -551,47 +519,45 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 }
 
-                for (dayoff in workOffStartHour) {
-                    if (tv_one.id == dayoff) {
-                        tv_one.text = ""
+                for (dayOff in workOffStartHour) {
+                    if (tvField.id == dayOff) {
+                        tvField.text = ""
                     }
                 }
 
-                for (dayoffEnd in workOffEndHour) {
-                    if (tv_one.id == dayoffEnd) {
-                        tv_one.text = ""
+                for (dayOffEnd in workOffEndHour) {
+                    if (tvField.id == dayOffEnd) {
+                        tvField.text = ""
                     }
                 }
 
-                for (dayoffBreak in workOffBreakHour) {
-                    if (tv_one.id == dayoffBreak) {
-                        tv_one.text = ""
+                for (dayOffBreak in workOffBreakHour) {
+                    if (tvField.id == dayOffBreak) {
+                        tvField.text = ""
                     }
                 }
 
-                for (dayoffTotal in workOffTotalHour) {
-                    if (tv_one.id == dayoffTotal) {
-                        tv_one.text = ""
+                for (dayOffTotal in workOffTotalHour) {
+                    if (tvField.id == dayOffTotal) {
+                        tvField.text = ""
                     }
                 }
                 for (columnTwo in startHourColumn) {
-                    if (tv_one.id == columnTwo && tv_one.text != "") {
+                    if (tvField.id == columnTwo && tvField.text != "") {
                         totalActualWorkColumnTwo += 1
                     }
                 }
 
-                val timeDataSetListener = object : TimePickerDialog.OnTimeSetListener {
-                    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
+                val timeDataSetListener =
+                    TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
                         setTimeEachCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                         setTimeEachCalendar.set(Calendar.MINUTE, minute)
                         val sdf = SimpleDateFormat("hh:mm", Locale.JAPAN)
-                        tv_one.text = ""
-                        tv_one.text = sdf.format(setTimeEachCalendar.time)
+                        tvField.text = ""
+                        tvField.text = sdf.format(setTimeEachCalendar.time)
                     }
-
-                }
-                if (isClickable == true) {
-                    tv_one.setOnClickListener {
+                if (isClickable) {
+                    tvField.setOnClickListener {
                         TimePickerDialog(
                             this@HomeActivity, 2, timeDataSetListener,
                             setTimeEachCalendar.get(Calendar.HOUR_OF_DAY),
@@ -601,11 +567,50 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 }
             }
-            tbl_layout.addView(tbl_row)
+            tableLayout.addView(tblRow)
 
         }
 
         addFooter()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun funTodayWorkingHour(
+        tvOne: TextView,
+        arrayWorkingHourInfo: ArrayList<Int>
+    ) {
+        var mStartMinutes = 0
+        var mEndMinutes = 0
+        var mBreakMinutes = 0
+        if (arrayWorkingHourInfo[0] != 0 || arrayWorkingHourInfo[1] != 0) {
+            mStartMinutes = arrayWorkingHourInfo[0] * 60 + arrayWorkingHourInfo[1]
+//                        tv_one.setText(tdyWorkingTime.toString())
+        }
+        if (arrayWorkingHourInfo[2] != 0 || arrayWorkingHourInfo[3] != 0) {
+            mEndMinutes = arrayWorkingHourInfo[2] * 60 + arrayWorkingHourInfo[3]
+
+        }
+        if (arrayWorkingHourInfo[4] != 0 || arrayWorkingHourInfo[5] != 0) {
+            mBreakMinutes = arrayWorkingHourInfo[4] * 60 + arrayWorkingHourInfo[5]
+
+        }
+        var remainingMinutes = 0
+        remainingMinutes =
+            mEndMinutes - (mStartMinutes + mBreakMinutes)
+        var todayWorkHour = 0
+        var todayWorkMinutes = 0
+        todayWorkHour = remainingMinutes / 60
+        todayWorkMinutes = remainingMinutes % 60
+        if (todayWorkHour != null || todayWorkMinutes != null) {
+            tvOne.text = "$todayWorkHour:$todayWorkMinutes"
+        }
+        if (tvOne.text != null && tvOne.text.isNotEmpty()) {
+
+            val ab = tvOne.text
+            val arr = ab.split(":")
+            totalWorkingHours += arr[0].toInt()
+            totalWorkingMinutes += arr[1].toInt()
+        }
     }
 
     inner class LoadDataTask : AsyncTask<Integer, Integer, String>() {
@@ -634,10 +639,10 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         } else if (id == R.id.menu_Print) {
 
-        }else if (id == R.id.send_mail) {
+        } else if (id == R.id.send_mail) {
 
-        }else if (id == R.id.company_profile) {
-            startActivity(Intent(this@HomeActivity,CompanyProfile::class.java))
+        } else if (id == R.id.company_profile) {
+            startActivity(Intent(this@HomeActivity, CompanyProfile::class.java))
         }
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)

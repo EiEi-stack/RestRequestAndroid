@@ -3,7 +3,6 @@ package com.example.restrequestandroid
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.TimePicker
@@ -32,7 +31,7 @@ class SetTimeActivity : AppCompatActivity() {
         val breakTime = findViewById<TextView>(R.id.tv_init_break_time)
 
         //選択した開始時間を設定する
-        val startdataSetListerer = object : TimePickerDialog.OnTimeSetListener {
+        val startDataSetListener = object : TimePickerDialog.OnTimeSetListener {
             override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
                 startCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 startCalendar.set(Calendar.MINUTE, minute)
@@ -41,7 +40,7 @@ class SetTimeActivity : AppCompatActivity() {
 
         }
         //選択した開始時間を設定する
-        val enddataSetListerer = object : TimePickerDialog.OnTimeSetListener {
+        val endDataSetListener = object : TimePickerDialog.OnTimeSetListener {
             override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
                 endCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 endCalendar.set(Calendar.MINUTE, minute)
@@ -50,7 +49,7 @@ class SetTimeActivity : AppCompatActivity() {
 
         }
         //選択した開休憩間を設定する
-        val breakdataSetListerer = object : TimePickerDialog.OnTimeSetListener {
+        val breakDataSetListener = object : TimePickerDialog.OnTimeSetListener {
             override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
                 breakCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 breakCalendar.set(Calendar.MINUTE, minute)
@@ -59,56 +58,41 @@ class SetTimeActivity : AppCompatActivity() {
 
         }
         //開始時間を選択する時
-        startTime.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-
-                TimePickerDialog(
-                    this@SetTimeActivity, 2, startdataSetListerer,
-                    startCalendar.get(Calendar.HOUR_OF_DAY),
-                    startCalendar.get(Calendar.MINUTE), true
-                ).show()
-            }
-
-        })
+        startTime.setOnClickListener {
+            TimePickerDialog(
+                this@SetTimeActivity, 2, startDataSetListener,
+                startCalendar.get(Calendar.HOUR_OF_DAY),
+                startCalendar.get(Calendar.MINUTE), true
+            ).show()
+        }
         //終了時間を選択する時
-        endTime.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-
-                TimePickerDialog(
-                    this@SetTimeActivity, 2, enddataSetListerer,
-                    endCalendar.get(Calendar.HOUR_OF_DAY),
-                    endCalendar.get(Calendar.MINUTE), true
-                ).show()
-            }
-
-        })
+        endTime.setOnClickListener {
+            TimePickerDialog(
+                this@SetTimeActivity, 2, endDataSetListener,
+                endCalendar.get(Calendar.HOUR_OF_DAY),
+                endCalendar.get(Calendar.MINUTE), true
+            ).show()
+        }
         //休憩時間を選択する時
-        breakTime.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-
-                TimePickerDialog(
-                    this@SetTimeActivity, 2, breakdataSetListerer,
-                    breakCalendar.get(Calendar.HOUR_OF_DAY),
-                    breakCalendar.get(Calendar.MINUTE), true
-                ).show()
-            }
-
-        })
+        breakTime.setOnClickListener {
+            TimePickerDialog(
+                this@SetTimeActivity, 2, breakDataSetListener,
+                breakCalendar.get(Calendar.HOUR_OF_DAY),
+                breakCalendar.get(Calendar.MINUTE), true
+            ).show()
+        }
 
 
         //つぎのActivityへ行く
-        setTime.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                val intent = Intent(this@SetTimeActivity, HomeActivity::class.java)
-                val bundle = Bundle()
-                bundle.putInt("init_start", startTimeMinutes)
-                bundle.putInt("init_end", endTimeMinutes)
-                bundle.putInt("init_break", breakTimeMinutes)
-                intent.putExtra("myInitTime",bundle)
-                startActivity(intent)
-
-            }
-        })
+        setTime.setOnClickListener {
+            val intent = Intent(this@SetTimeActivity, HomeActivity::class.java)
+            val bundle = Bundle()
+            bundle.putInt("init_start", startTimeMinutes)
+            bundle.putInt("init_end", endTimeMinutes)
+            bundle.putInt("init_break", breakTimeMinutes)
+            intent.putExtra("myInitTime", bundle)
+            startActivity(intent)
+        }
     }
 
     //テキストビューに開始時間を設定する
